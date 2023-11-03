@@ -1,0 +1,44 @@
+.table {
+  @apply w-full caption-bottom text-sm;
+}
+
+.tableHeading {
+  @apply border-b;
+}
+
+.tableRow {
+  @apply h-16 border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer;
+}
+.tableHead {
+  @apply px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] capitalize;
+}
+
+.tableCell {
+  @apply p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px];
+}
+
+.tableBody {
+  @apply border-0;
+}
+
+/* .expanded-row {
+  display: none;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.expanded-row.show {
+  display: table-row;
+  opacity: 1;
+} */
+
+.expandedRow {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 0;
+}
+
+.expandedRow.show {
+  max-height: 1000px; /* Adjust the max-height as needed */
+  opacity: 1;
+}

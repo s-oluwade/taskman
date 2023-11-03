@@ -1,0 +1,9 @@
+mutation ReorderSubtasks($subtaskId: Int!, $newIndex: Int!) {
+  reorderSubtasks(subtaskId: $subtaskId, newIndex: $newIndex) {
+    id,
+    title,
+    status,
+    index,
+    taskId
+  }
+}

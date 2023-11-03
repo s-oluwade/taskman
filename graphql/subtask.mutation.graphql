@@ -1,0 +1,29 @@
+mutation UpdateSubtask($subtaskId: Int!, $edits: EditSubtaskInput!) {
+  updateSubtask(id: $subtaskId, edits: $edits) {
+    id
+    index
+    status
+    taskId
+    title
+  }
+}
+
+mutation AddSubtask($input: AddSubtaskInput!) {
+  addSubtask(subtask: $input) {
+    id
+    index
+    status
+    taskId
+    title
+  }
+}
+
+mutation DeleteSubtask($deleteSubtaskId: Int!) {
+  deleteSubtask(id: $deleteSubtaskId) {
+    id
+    index
+    status
+    taskId
+    title
+  }
+}

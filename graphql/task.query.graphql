@@ -1,0 +1,19 @@
+query GetTask($taskId: Int!) {
+  task(id: $taskId) {
+    id
+    priority
+    title
+    label
+    cursor
+    dueDate
+    progress
+    status
+    subtasks {
+      id
+      index
+      taskId
+      status
+      title
+    }
+  }
+}

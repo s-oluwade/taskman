@@ -1,0 +1,9 @@
+query GetSubtask($subtaskId: Int!) {
+  subtask(id: $subtaskId) {
+    id
+    index
+    status
+    taskId
+    title
+  }
+}

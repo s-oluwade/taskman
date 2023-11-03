@@ -1,0 +1,10 @@
+plugins:
+  - serverless-bundle
+
+custom:
+  bundle:
+    ignorePackages: 
+      - pg-hstore
+      - mariadb
+      - sqlite3
+      - pg-native

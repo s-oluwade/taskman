@@ -1,0 +1,59 @@
+mutation CreateTask($task: AddTaskInput!) {
+  addTask(task: $task) {
+    id,
+    title,
+    label,
+    priority,
+    progress,
+    status,
+    dueDate,
+    cursor,
+    subtasks {
+      id,
+      index,
+      status,
+      taskId,
+      title
+    }
+  }
+}
+
+mutation EditTask($id: Int!, $edits: EditTaskInput!) {
+  updateTask(id: $id, edits: $edits) {
+    id,
+    priority,
+    title,
+    label,
+    cursor,
+    dueDate,
+    progress,
+    status,
+    subtasks {
+      id,
+      index,
+      taskId,
+      status,
+      title,
+    }
+  }
+}
+
+mutation DeleteTask($id: Int!) {
+  deleteTask(id: $id) {
+    id,
+    priority,
+    title,
+    label,
+    cursor,
+    dueDate,
+    progress,
+    status,
+    subtasks {
+      id,
+      index,
+      taskId,
+      status,
+      title,
+    }
+  }
+}

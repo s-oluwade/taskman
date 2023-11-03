@@ -1,0 +1,19 @@
+query GetTasks {
+  tasks {
+    id
+    priority
+    title
+    label
+    cursor
+    dueDate
+    progress
+    status
+    subtasks {
+      id
+      index
+      taskId
+      status
+      title
+    }
+  }
+}
