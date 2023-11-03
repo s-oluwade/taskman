@@ -3,13 +3,14 @@
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select-for-priority';
 import {Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from '@/components/ui/sheet';
 import {useRouter} from 'next/navigation';
 import {useState, useTransition} from 'react';
 import {options} from '../data/options';
 import {DueDatePicker} from './DueDatePicker';
 import {CreateTaskDocument} from '@/graphql/generated';
+import {useMutation, Mutation, useQuery} from 'urql';
 
 const CreateTaskButton = () => {
   const router = useRouter();
@@ -17,29 +18,32 @@ const CreateTaskButton = () => {
   const [title, setTitle] = useState('');
   const [label, setLabel] = useState('');
   const [priority, setPriority] = useState('');
-  const [dueDate, setDueDate] = useState<String | null>(null);
+  const [dueDate, setDueDate] = useState<string | null>(null);
+  const [createdTask, createTask] = useMutation(CreateTaskDocument);
 
   async function onSubmit() {
-    await fetch('http://localhost:3000/api/tasks', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
+    if (title === '' || label === '' || priority === '') {
+      return;
+    }
+
+    createTask({
+      task: {
         title,
         label,
         priority,
         dueDate
-      }),
-    });
+      }
+    })
 
-    startTransition(() => {
-      // Refresh the current route and fetch new data from the server without
-      // losing client-side browser or React state.
-      router.refresh();
-    });
+    // startTransition(() => {
+    //   // Refresh the current route and fetch new data from the server without
+    //   // losing client-side browser or React state.
+    //   router.refresh();
+    // });
   }
 
-  function changeDueDate(date: Date) {
-    setDueDate(date.toLocaleDateString());
+  function changeDueDate(date: Date | undefined) {
+    setDueDate(date?.toLocaleDateString() ?? null);
   }
 
   return (

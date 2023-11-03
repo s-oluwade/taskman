@@ -1,8 +1,9 @@
+import Header from '@/components/Header';
+import {ThemeProvider} from '@/components/theme-provider';
+import {Toaster} from '@/components/ui/toaster';
 import type {Metadata} from 'next';
 import {Inter} from 'next/font/google';
 import './globals.css';
-import {ThemeProvider} from '@/components/theme-provider';
-import Header from '@/components/Header';
 
 const inter = Inter({subsets: ['latin']});
 
@@ -17,8 +18,9 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
       <head />
       <body className={inter.className}>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-          <Header/>
+          <Header />
           <main className='container'>{children}</main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

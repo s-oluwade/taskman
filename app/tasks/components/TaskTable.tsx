@@ -15,17 +15,18 @@ const TaskTable = ({tasks}: TasksProps) => {
   const colSpan = 7;
 
   return (
-    <div className='space-y-4 border p-2 rounded'>
+    <div className='space-y-4 border p-2 rounded min-w-fit'>
+      <div className='flex justify-end'>
       <CreateTaskButton />
+      </div>
       <table className={styles.table}>
         <thead className={styles.tableHeading}>
           <tr className={styles.tableRow}>
-            <th className={styles.tableHead}></th>
             <th className={styles.tableHead}>TASK</th>
-            <th className={`${styles.tableHead} text-left`}>title</th>
-            <th className={styles.tableHead}>priority</th>
-            <th className={styles.tableHead}>due</th>
-            <th colSpan={2}/>
+            <th className={`${styles.tableHead} text-left`}><span className='pl-4'>title</span></th>
+            <th className={`${styles.tableHead} hidden md:table-cell`}>priority</th>
+            <th className={`${styles.tableHead} hidden md:table-cell`}>due</th>
+            <th/>
           </tr>
         </thead>
         <tbody className={styles.tableBody}>

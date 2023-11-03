@@ -1,27 +1,41 @@
 'use client';
 
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+
 import AnimatingIcon from '@/components/AnimatingIcon';
 import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
-import {CheckIcon} from '@radix-ui/react-icons';
+import {CheckIcon, TrashIcon} from '@radix-ui/react-icons';
 import {useEffect, useState} from 'react';
 import StatusComboboxPopover from './StatusComboboxPopover';
 import {Task, Subtask} from '@/graphql/types';
 import {useMutation, Mutation, useQuery} from 'urql';
 import {DragDropContext, Droppable, Draggable} from '@hello-pangea/dnd';
 import {RowsIcon} from '@radix-ui/react-icons';
-import {ReorderSubtasksDocument, UpdateSubtaskDocument} from '@/graphql/generated';
+import {ReorderSubtasksDocument, UpdateSubtaskDocument, DeleteSubtaskDocument, DeleteTaskDocument} from '@/graphql/generated';
+import AddSubtaskButton from './AddSubtaskButton';
 
 interface SubTaskTableProps {
   cursor: number;
   subtasks: Subtask[];
 }
 
-export function SubTaskTable({cursor, subtasks}: SubTaskTableProps) {
+export function SubtaskTable({cursor, subtasks}: SubTaskTableProps) {
   const [audio, setAudio] = useState<HTMLAudioElement>();
-  const [orderedSubtasks, reorderSubtasks] = useMutation(ReorderSubtasksDocument);
-  const [updatedSubtask, updateSubtask] = useMutation(UpdateSubtaskDocument);
+  const [orderedSubtasksResult, reorderSubtasks] = useMutation(ReorderSubtasksDocument);
+  const [updatedSubtaskResult, updateSubtask] = useMutation(UpdateSubtaskDocument);
+  const [deletedSubtaskResult, deleteSubtask] = useMutation(DeleteSubtaskDocument);
+  const [deletedTaskResult, deleteTask] = useMutation(DeleteTaskDocument);
 
   useEffect(() => {
     setAudio(new Audio('/click.wav'));
@@ -33,6 +47,14 @@ export function SubTaskTable({cursor, subtasks}: SubTaskTableProps) {
     const subtaskId = Number(result.draggableId);
     await reorderSubtasks({subtaskId: subtaskId, newIndex: result.destination.index});
   };
+
+  async function actionSubtaskDelete(subtaskId: number) {
+    const taskId = subtasks[0].taskId;
+    await deleteSubtask({subtaskId: subtaskId});
+    if (subtasks.length <= 1) {
+      await deleteTask({id: taskId});
+    }
+  }
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -59,6 +81,7 @@ export function SubTaskTable({cursor, subtasks}: SubTaskTableProps) {
                 <TableHead className='w-[100px] pr-0'>
                   <CheckIcon className='h-6 w-6 mx-auto' />
                 </TableHead>
+                <TableHead></TableHead>
               </TableRow>
               {provided.placeholder}
             </TableHeader>
@@ -75,11 +98,9 @@ export function SubTaskTable({cursor, subtasks}: SubTaskTableProps) {
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}>
                       <TableCell>
-                        <Button variant='outline' size='icon'>
-                          <RowsIcon className='h-4 w-4' />
-                        </Button>
+                        <RowsIcon className='h-5 w-5' />
                       </TableCell>
-                      <TableCell className='font-medium text-center'>{subtask.index}</TableCell>
+                      <TableCell className='font-medium text-center'>{subtask.index + 1}</TableCell>
                       <TableCell>{subtask.title}</TableCell>
                       <TableCell className='flex justify-center items-center gap-2'>
                         <StatusComboboxPopover
@@ -107,13 +128,49 @@ export function SubTaskTable({cursor, subtasks}: SubTaskTableProps) {
                           className='h-8 w-8'
                         />
                       </TableCell>
+                      <TableCell className='text-right'>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
+                              variant={'outline'}
+                              size={'icon'}>
+                              <TrashIcon className='h-4 w-4' />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className='sm:max-w-[425px]'>
+                            <DialogHeader>
+                              <DialogTitle className='text-2xl'>
+                                {subtasks.length > 1 ? '🤔' : 'This is the only subtask 😯'}
+                              </DialogTitle>
+                              <DialogDescription className='pt-4 space-y-6 text-lg'>
+                                {subtasks.length === 1 && <p>The <span className='text-primary underline'>Task</span> will also be deleted.</p>}
+                                <p>Remove <span className='text-primary'>`{subtask.title}`</span>?</p>
+                              </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                              <DialogClose>
+                                <Button
+                                  onClick={async () => {
+                                    actionSubtaskDelete(subtask.id);
+                                  }}
+                                  type='submit'>
+                                  Remove
+                                </Button>
+                              </DialogClose>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </TableCell>
                     </TableRow>
                   )}
                 </Draggable>
               ))}
               <TableRow>
-                <TableCell className='text-center' colSpan={5}>
-                  <Button variant={'outline'}>+</Button>
+                <TableCell className='text-center' colSpan={6}>
+                  <AddSubtaskButton taskId={subtasks[0].taskId} />
                 </TableCell>
               </TableRow>
             </TableBody>

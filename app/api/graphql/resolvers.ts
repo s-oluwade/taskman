@@ -84,7 +84,7 @@ export const resolvers = {
       });
 
       await Subtask.create({
-        index: (await Subtask.findAll()).length,
+        index: 0,
         taskId: createdTask.id,
       });
 

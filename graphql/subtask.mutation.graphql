@@ -18,8 +18,8 @@ mutation AddSubtask($input: AddSubtaskInput!) {
   }
 }
 
-mutation DeleteSubtask($deleteSubtaskId: Int!) {
-  deleteSubtask(id: $deleteSubtaskId) {
+mutation DeleteSubtask($subtaskId: Int!) {
+  deleteSubtask(id: $subtaskId) {
     id
     index
     status
