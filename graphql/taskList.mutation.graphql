@@ -1,0 +1,23 @@
+mutation CreateTaskList($taskList: AddTaskListInput!) {
+  createTaskList(taskList: $taskList) {
+    id
+    name
+    userId
+  }
+}
+
+mutation UpdateTaskList($taskListId: Int!, $edits: EditTaskListInput!) {
+  updateTaskList(id: $taskListId, edits: $edits) {
+    id
+    name
+    userId
+  }
+}
+
+mutation DeleteTaskList($deleteTaskListId: Int!) {
+  deleteTaskList(id: $deleteTaskListId) {
+    id
+    name
+    userId
+  }
+}

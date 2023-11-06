@@ -8,7 +8,7 @@ import {Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger} 
 import {useRouter} from 'next/navigation';
 import {useState, useTransition} from 'react';
 import {options} from '../data/options';
-import {DueDatePicker} from './DueDatePicker';
+import {DueDatePicker} from './CreateTaskDueDatePicker';
 import {AddSubtaskDocument} from '@/graphql/generated';
 import {useMutation, Mutation, useQuery} from 'urql';
 import { PaperPlaneIcon } from '@radix-ui/react-icons';

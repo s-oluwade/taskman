@@ -146,12 +146,12 @@ export function SubtaskTable({cursor, subtasks}: SubTaskTableProps) {
                                 {subtasks.length > 1 ? '🤔' : 'This is the only subtask 😯'}
                               </DialogTitle>
                               <DialogDescription className='pt-4 space-y-6 text-lg'>
-                                {subtasks.length === 1 && <p>The <span className='text-primary underline'>Task</span> will also be deleted.</p>}
-                                <p>Remove <span className='text-primary'>`{subtask.title}`</span>?</p>
+                                {subtasks.length === 1 && <span>The <span className='text-primary underline'>Task</span> will also be deleted.</span>}
+                                <span>Remove <span className='text-primary'>`{subtask.title}`</span>?</span>
                               </DialogDescription>
                             </DialogHeader>
                             <DialogFooter>
-                              <DialogClose>
+                              <DialogClose asChild>
                                 <Button
                                   onClick={async () => {
                                     actionSubtaskDelete(subtask.id);

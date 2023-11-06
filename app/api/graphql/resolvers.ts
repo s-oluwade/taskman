@@ -1,14 +1,11 @@
-// import {Sequelize} from 'sequelize';
-const { Sequelize } = require('sequelize');
+import {Sequelize} from 'sequelize';
 import _Task from './models/Task';
 import _Subtask from './models/Subtask';
-// import mysql2 from 'mysql2';
-const mysql = require('mysql2');
+import _TaskList from './models/TaskList';
 
 const sequelize = new Sequelize(process.env.MYSQLDATABASE!, process.env.MYSQLUSER!, process.env.MYSQLPASSWORD, {
   host: process.env.MYSQLHOST,
   dialect: 'mysql',
-  dialectModule: mysql,
   dialectOptions: {
     ssl: {
       rejectUnauthorized: true,
@@ -26,16 +23,16 @@ const sequelize = new Sequelize(process.env.MYSQLDATABASE!, process.env.MYSQLUSE
   },
 });
 
-sequelize
-  .getQueryInterface()
-  .showAllSchemas()
-  .then((tableObj: any) => {
-    console.log('// Tables in database', '==========================');
-    console.log(tableObj);
-  })
-  .catch((err: any) => {
-    console.log('showAllSchemas ERROR', err);
-  });
+// sequelize
+//   .getQueryInterface()
+//   .showAllSchemas()
+//   .then((tableObj: any) => {
+//     console.log('// Tables in database', '==========================');
+//     console.log(tableObj);
+//   })
+//   .catch((err: any) => {
+//     console.log('showAllSchemas ERROR', err);
+//   });
 
 try {
   await sequelize.authenticate();
@@ -46,17 +43,23 @@ try {
 
 const Task = _Task(sequelize);
 const Subtask = _Subtask(sequelize);
+const TaskList = _TaskList(sequelize);
 
 export const resolvers = {
   Query: {
-    tasks: async () => {
-      const result = await Task.findAll();
-      return result;
-    },
+    tasks: async (obj: any, args: any, context: any, info: any) =>
+      (await Task.findAll()).filter((task) => task.taskListName === args.taskListName),
+    allTasks: async () => await Task.findAll(),
     task: async (obj: any, args: any, context: any, info: any) => await Task.findByPk(args.id),
     subtasks: async (obj: any, args: any, context: any, info: any) =>
       (await Subtask.findAll()).filter((subtask) => subtask.taskId === args.taskId),
     subtask: async (obj: any, args: any, context: any, info: any) => await Subtask.findByPk(args.id),
+    taskList: async (obj: any, args: any, context: any, info: any) =>
+      await TaskList.findOne({where: {name: args.name}}),
+    taskLists: async (obj: any, args: any, context: any, info: any) => {
+      return (await TaskList.findAll()).filter((taskList) => args.names.includes(taskList.name));
+    },
+    allTaskLists: async () => await TaskList.findAll(),
   },
   Task: {
     subtasks: async (parent: any) =>
@@ -65,7 +68,39 @@ export const resolvers = {
   Subtask: {
     task: async (parent: any) => await Task.findOne({where: {id: parent.taskId}}),
   },
+  TaskList: {
+    tasks: async (parent: any) => await Task.findAll({where: {taskListName: parent.name}}),
+  },
   Mutation: {
+    async deleteTaskList(_: any, args: any) {
+      const taskList = await TaskList.findOne({where: {id: args.id}});
+      taskList?.destroy();
+
+      return await TaskList.findAll();
+    },
+    /*
+     * args.task includes:
+     * title, label, priority, dueDate?
+     */
+    async createTaskList(_: any, args: any) {
+      // if (!args.taskList.name) {
+      //   const adjective = faker.word.adjective();
+      //   const interjection = faker.word.interjection()
+      //   const phrase = adjective + "-" + interjection;
+
+      //   args.taskList.name = phrase;
+      // }
+      const createdTaskList = await TaskList.create({
+        ...args.taskList,
+      });
+
+      return createdTaskList;
+    },
+    async updateTaskList(_: any, args: any) {
+      await TaskList.update(args.edits, {where: {id: args.id}});
+
+      return await TaskList.findOne({where: {id: args.id}});
+    },
     async deleteTask(_: any, args: any) {
       const task = await Task.findOne({where: {id: args.id}});
       task?.destroy();
@@ -147,8 +182,7 @@ export const resolvers = {
         subtasks.forEach(async (subtask) => {
           if (subtask.status === 'done') {
             finished += 1;
-          }
-          else if (subtask.status !== 'todo') {
+          } else if (subtask.status !== 'todo') {
             taskStatus = 'in progress';
           }
 
@@ -190,7 +224,7 @@ export const resolvers = {
           if (subtask.index > cursor) {
             await Subtask.update({status: 'todo'}, {where: {id: subtask.id}});
           }
-          
+
           await Subtask.update({index: subtask.index}, {where: {id: subtask.id}});
           return subtask;
         });

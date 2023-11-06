@@ -2,23 +2,39 @@
 
 import * as React from "react"
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons"
-import { DayPicker } from "react-day-picker"
-
+import { DayClickEventHandler, DayPicker } from "react-day-picker"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
+type CalendarCustomProps = {
+  bookedDays?: Date[]
+} & CalendarProps;
+
 function Calendar({
   className,
   classNames,
+  bookedDays,
   showOutsideDays = true,
   ...props
-}: CalendarProps) {
+}: CalendarCustomProps) {
+
+  // const [booked, setBooked] = React.useState(false);
+  // const bookedDays = [new Date(2023, 10, 8), new Date(2023, 10, 10)];
+  const bookedStyle = { border: '2px solid currentColor' };
+
+  const handleDayClick: DayClickEventHandler = (day, modifiers) => {
+    // setBooked(day && modifiers.booked);
+  };
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
+      modifiers={{booked: bookedDays ?? []}}
+      modifiersStyles={{booked: bookedStyle}}
+      onDayClick={handleDayClick}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
@@ -62,6 +78,7 @@ function Calendar({
         IconLeft: ({ ...props }) => <ChevronLeftIcon className="h-4 w-4" />,
         IconRight: ({ ...props }) => <ChevronRightIcon className="h-4 w-4" />,
       }}
+      // modifiers={}
       {...props}
     />
   )

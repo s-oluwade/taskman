@@ -35,7 +35,6 @@ import {useToast} from '@/components/ui/use-toast';
 import {DeleteTaskDocument, EditTaskDocument} from '@/graphql/generated';
 import {Task} from '@/graphql/types';
 import {addDays} from 'date-fns';
-import {useRouter} from 'next/navigation';
 import React, {useEffect, useState, useTransition} from 'react';
 import {useMutation} from 'urql';
 import {options} from '../data/options';
@@ -44,7 +43,7 @@ import {SubtaskTable} from './SubtaskTable';
 import styles from './TaskTable.module.css';
 
 interface TaskBarProps {
-  originalTask: Task;
+  task: NonNullable<Task>;
   width: number;
   index: number;
 }
@@ -60,18 +59,12 @@ const icons = {
   high: ExclamationTriangleIcon,
 };
 
-const TaskBar = ({originalTask, width, index}: TaskBarProps) => {
+const TaskBar = ({task, width, index}: TaskBarProps) => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const {toast} = useToast();
-  const [task, setTask] = useState<Task>(originalTask);
   const [updatedTaskResult, updateTask] = useMutation(EditTaskDocument);
   const [deletedTaskResult, deleteTask] = useMutation(DeleteTaskDocument);
-
-  useEffect(() => {
-    setTask(originalTask);
-  }, [originalTask]);
 
   const toggleRow = (rowId: number) => {
     if (expandedRows.includes(rowId)) {
@@ -81,15 +74,7 @@ const TaskBar = ({originalTask, width, index}: TaskBarProps) => {
     }
   };
 
-  if (!task) {
-    return;
-  }
-
-  function TaskPriorityChanger(task: Task) {
-    if (!task) {
-      return;
-    }
-
+  function TaskPriorityChanger() {
     return (
       <div className='flex items-center justify-center'>
         <Select
@@ -97,17 +82,17 @@ const TaskBar = ({originalTask, width, index}: TaskBarProps) => {
             updateTask({id: task.id, edits: {priority: newVal}});
           }}
           value={task.priority}>
-          <SelectTrigger className='md:w-[130px]'>
+          <SelectTrigger className='lg:w-[130px]'>
             <SelectValue defaultValue={task.priority} />
           </SelectTrigger>
           <SelectContent>
             {options.priorities.map((priority) => (
               <SelectItem key={priority.value} value={priority.value}>
                 <div className='flex'>
-                  {priority.value === 'low' && <icons.low className='md:mr-2 h-5 w-5 text-blue-400' />}
-                  {priority.value === 'medium' && <icons.medium className='md:mr-2 h-5 w-5 text-yellow-400' />}
-                  {priority.value === 'high' && <icons.high className='md:mr-2 h-5 w-5 text-red-400' />}
-                  <span className='capitalize hidden md:inline'>{priority.value}</span>
+                  {priority.value === 'low' && <icons.low className='lg:mr-2 h-5 w-5 text-blue-400' />}
+                  {priority.value === 'medium' && <icons.medium className='lg:mr-2 h-5 w-5 text-yellow-400' />}
+                  {priority.value === 'high' && <icons.high className='lg:mr-2 h-5 w-5 text-red-400' />}
+                  <span className='capitalize hidden lg:inline'>{priority.value}</span>
                 </div>
               </SelectItem>
             ))}
@@ -117,11 +102,7 @@ const TaskBar = ({originalTask, width, index}: TaskBarProps) => {
     );
   }
 
-  function TaskSnoozer(task: Task) {
-    if (!task) {
-      return;
-    }
-
+  function TaskSnoozer() {
     return (
       <TooltipProvider>
         <Tooltip>
@@ -215,8 +196,9 @@ const TaskBar = ({originalTask, width, index}: TaskBarProps) => {
       <tr className={styles.tableRow} onClick={() => toggleRow(index)}>
         <td className={`${styles.tableCell} text-center`}>
           <div className='flex items-center'>
-            <span className='whitespace-nowrap'>TASK-{index + 1}</span>
-            <span className='ml-2 hidden md:inline'>
+            <span className='whitespace-nowrap hidden md:inline-block'>TASK-{index + 1}</span>
+            <span className='md:hidden'>{index + 1}</span>
+            <span className='ml-2 hidden lg:inline'>
               {task.status === 'backlog' && <icons.backlog className='mr-2 h-6 w-6 text-muted-foreground' />}
               {task.status === 'todo' && <icons.todo className='mr-2 h-6 w-6 text-muted-foreground' />}
               {task.status === 'in progress' && <icons.inprogress className='mr-2 h-5 w-5 text-blue-500/50' />}
@@ -226,18 +208,33 @@ const TaskBar = ({originalTask, width, index}: TaskBarProps) => {
           </div>
         </td>
         <td className={styles.tableCell}>
-          <div className='flex gap-2 px-4'>
-            <div>
-              <Badge className='mr-2 my-2' variant='outline'>
-                {task.label}
-              </Badge>
-              <span className='capitalize'>{task.title}</span>
+          <div className='flex flex-col md:flex-row justify-between gap-2'>
+            <div className='flex gap-2 px-4'>
+              <div>
+                <Badge className='mr-2 my-2' variant='outline'>
+                  {task.label}
+                </Badge>
+                <span className='capitalize'>{task.title}</span>
+              </div>
+              {task.progress === 100 && <AnimatingIcon animationIndex={0} />}
             </div>
-            {task.progress === 100 && <AnimatingIcon animationIndex={0} />}
+            {/* taskbar controls, shows only on small screens */}
+            <div id='taskbar-control-group-1' className='flex gap-2 items-center justify-end pt-2 lg:hidden'>
+              {TaskPriorityChanger()}
+              <TaskDueDatePicker
+                onChange={(newDate) => {
+                  updateTask({id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}});
+                }}
+                dateString={task.dueDate ?? null}
+              />
+              {TaskSnoozer()}
+              {TaskDeleter(task.id)}
+            </div>
           </div>
         </td>
-        <td className={`${styles.tableCell} text-center hidden md:table-cell`}>{TaskPriorityChanger(task)}</td>
-        <td className={`${styles.tableCell} text-center hidden md:table-cell`}>
+        <td className={`${styles.tableCell} text-center hidden lg:table-cell`}>{TaskPriorityChanger()}</td>
+        {/* shows only on large screens */}
+        <td className={`${styles.tableCell} text-center hidden lg:table-cell`}>
           <TaskDueDatePicker
             onChange={(newDate) => {
               updateTask({id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}});
@@ -245,22 +242,10 @@ const TaskBar = ({originalTask, width, index}: TaskBarProps) => {
             dateString={task.dueDate ?? null}
           />
         </td>
-        <td className='hidden md:table-cell items-center'>
-          <div className='flex items-center gap-2'>
-            {TaskSnoozer(task)}
-            {TaskDeleter(task.id)}
-          </div>
-        </td>
-        <td className='table-cell md:hidden'>
-          <div className='flex items-center gap-2'>
-            {TaskPriorityChanger(task)}
-            <TaskDueDatePicker
-              onChange={(newDate) => {
-                updateTask({id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}});
-              }}
-              dateString={task.dueDate ?? null}
-            />
-            {TaskSnoozer(task)}
+        {/* shows only on large screens */}
+        <td className='hidden lg:table-cell items-center'>
+          <div className='flex items-center gap-2 justify-center'>
+            {TaskSnoozer()}
             {TaskDeleter(task.id)}
           </div>
         </td>

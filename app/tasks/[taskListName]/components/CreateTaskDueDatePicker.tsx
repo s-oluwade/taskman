@@ -13,7 +13,7 @@ interface DueDatePickerProps {
   onChange: (date: Date | undefined) => void;
 }
 
-export function DueDatePicker({onChange}: DueDatePickerProps) {
+export function CreateTaskDueDatePicker({onChange}: DueDatePickerProps) {
   const [date, setDate] = React.useState<Date>();
   
   React.useEffect(()=>{
@@ -27,7 +27,7 @@ export function DueDatePicker({onChange}: DueDatePickerProps) {
       <PopoverTrigger asChild>
         <Button
           variant={'outline'}
-          className={cn('w-[240px] justify-start text-left font-normal', !date && 'text-muted-foreground')}>
+          className={cn('w-[200px] justify-start text-left font-normal', !date && 'text-muted-foreground')}>
           <CalendarIcon className='mr-2 h-4 w-4' />
           {date ? format(date, 'PPP') : <span>Whenever</span>}
         </Button>

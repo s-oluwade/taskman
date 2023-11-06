@@ -1,18 +1,40 @@
-query GetTasks {
-  tasks {
-    id
-    priority
-    title
-    label
+query GetTasks($taskListName: String!) {
+  tasks(taskListName: $taskListName) {
     cursor
     dueDate
+    id
+    label
+    priority
     progress
     status
+    taskListName
+    title
     subtasks {
       id
       index
-      taskId
       status
+      taskId
+      title
+    }
+  }
+}
+
+query GetAllTasks {
+  allTasks {
+    cursor
+    dueDate
+    id
+    label
+    priority
+    progress
+    status
+    taskListName
+    title
+    subtasks {
+      id
+      index
+      status
+      taskId
       title
     }
   }

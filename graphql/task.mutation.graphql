@@ -1,6 +1,7 @@
 mutation CreateTask($task: AddTaskInput!) {
   addTask(task: $task) {
     id,
+    taskListName
     title,
     label,
     priority,
@@ -21,6 +22,7 @@ mutation CreateTask($task: AddTaskInput!) {
 mutation EditTask($id: Int!, $edits: EditTaskInput!) {
   updateTask(id: $id, edits: $edits) {
     id,
+    taskListName
     priority,
     title,
     label,
@@ -41,6 +43,7 @@ mutation EditTask($id: Int!, $edits: EditTaskInput!) {
 mutation DeleteTask($id: Int!) {
   deleteTask(id: $id) {
     id,
+    taskListName
     priority,
     title,
     label,

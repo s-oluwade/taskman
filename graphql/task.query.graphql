@@ -1,6 +1,7 @@
 query GetTask($taskId: Int!) {
   task(id: $taskId) {
     id
+    taskListName
     priority
     title
     label
