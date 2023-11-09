@@ -8,7 +8,7 @@ import {useEffect} from 'react';
 import {options} from '../data/options';
 
 interface StatusComboboxPopoverProps {
-  onChange: ({subtaskId, edits}: {subtaskId: number; edits: {status: string}}) => void;
+  onChange: (subtaskId: number, edits: {status: string}) => void;
   notReady: boolean;
   status: string;
   subtaskId: number;
@@ -26,7 +26,7 @@ export default function StatusComboboxPopover({subtaskId, notReady, status, onCh
     <div className='flex items-center space-x-4'>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger disabled={selectedStatus === 'done' || notReady} asChild>
-          <Button variant='outline' className='w-[120px] justify-start capitalize whitespace-nowrap'>
+          <Button variant='outline' className='border-gray-400 dark:border-border w-[120px] justify-start capitalize whitespace-nowrap'>
             {selectedStatus ? <>{selectedStatus}</> : <>+ Set status</>}
           </Button>
         </PopoverTrigger>
@@ -43,7 +43,7 @@ export default function StatusComboboxPopover({subtaskId, notReady, status, onCh
                     value={status.value}
                     onSelect={() => {
                       setSelectedStatus(status.value ?? null);
-                      onChange({subtaskId, edits: {status: status.value}});
+                      onChange(subtaskId, {status: status.value});
                       setOpen(false);
                     }}>
                     {status.label}

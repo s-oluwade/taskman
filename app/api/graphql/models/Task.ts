@@ -3,7 +3,7 @@ import {Model, Sequelize, DataTypes} from 'sequelize';
 export default function _Task(sequelize: Sequelize) {
   class Task extends Model {
     declare id: number;
-    declare taskListName: string;
+    declare tasklistName: string;
     declare title: string;
     declare label: string;
     declare priority: string;
@@ -20,7 +20,7 @@ export default function _Task(sequelize: Sequelize) {
         autoIncrement: true,
         primaryKey: true,
       },
-      taskListName: {
+      tasklistName: {
         type: new DataTypes.STRING(128),
         allowNull: false,
       },

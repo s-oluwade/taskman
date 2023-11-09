@@ -19,40 +19,63 @@ import {CheckIcon, TrashIcon} from '@radix-ui/react-icons';
 import {useEffect, useState} from 'react';
 import StatusComboboxPopover from './StatusComboboxPopover';
 import {Task, Subtask} from '@/graphql/types';
-import {useMutation, Mutation, useQuery} from 'urql';
+import {useMutation} from '@apollo/client';
 import {DragDropContext, Droppable, Draggable} from '@hello-pangea/dnd';
 import {RowsIcon} from '@radix-ui/react-icons';
-import {ReorderSubtasksDocument, UpdateSubtaskDocument, DeleteSubtaskDocument, DeleteTaskDocument} from '@/graphql/generated';
+import {
+  ReorderSubtasksDocument,
+  UpdateSubtaskDocument,
+  DeleteSubtaskDocument,
+  DeleteTaskDocument,
+  GetTasksDocument,
+} from '@/graphql/generated';
 import AddSubtaskButton from './AddSubtaskButton';
 
 interface SubTaskTableProps {
   cursor: number;
   subtasks: Subtask[];
+  onChange: (subtask: Subtask, advance: boolean) => void;
 }
 
-export function SubtaskTable({cursor, subtasks}: SubTaskTableProps) {
+export function SubtaskTable({cursor, subtasks, onChange}: SubTaskTableProps) {
   const [audio, setAudio] = useState<HTMLAudioElement>();
-  const [orderedSubtasksResult, reorderSubtasks] = useMutation(ReorderSubtasksDocument);
-  const [updatedSubtaskResult, updateSubtask] = useMutation(UpdateSubtaskDocument);
-  const [deletedSubtaskResult, deleteSubtask] = useMutation(DeleteSubtaskDocument);
-  const [deletedTaskResult, deleteTask] = useMutation(DeleteTaskDocument);
-
-  useEffect(() => {
-    setAudio(new Audio('/click.wav'));
-  }, []);
+  const [reorderSubtasks, {data: reorderData, loading: reorderLoading, error: reorderError}] = useMutation(
+    ReorderSubtasksDocument,
+    {
+      refetchQueries: [GetTasksDocument],
+    }
+  );
+  const [updateSubtask, {data: updateData, loading: updateLoading, error: updateError}] = useMutation(
+    UpdateSubtaskDocument,
+    {
+      refetchQueries: [GetTasksDocument],
+    }
+  );
+  const [deleteSubtask, {data: deleteData, loading: deleteLoading, error: deleteError}] = useMutation(
+    DeleteSubtaskDocument,
+    {
+      refetchQueries: [GetTasksDocument],
+    }
+  );
+  const [deleteTask, {data: deleteTaskData, loading: deleteTaskLoading, error: deleteTaskError}] = useMutation(
+    DeleteTaskDocument,
+    {
+      refetchQueries: [GetTasksDocument],
+    }
+  );
 
   const onDragEnd = async (result: any) => {
     if (!result.destination) return;
 
     const subtaskId = Number(result.draggableId);
-    await reorderSubtasks({subtaskId: subtaskId, newIndex: result.destination.index});
+    await reorderSubtasks({variables: {subtaskId: subtaskId, newIndex: result.destination.index}});
   };
 
   async function actionSubtaskDelete(subtaskId: number) {
     const taskId = subtasks[0].taskId;
-    await deleteSubtask({subtaskId: subtaskId});
+    await deleteSubtask({variables: {subtaskId: subtaskId}});
     if (subtasks.length <= 1) {
-      await deleteTask({id: taskId});
+      await deleteTask({variables: {id: taskId}});
     }
   }
 
@@ -107,7 +130,9 @@ export function SubtaskTable({cursor, subtasks}: SubTaskTableProps) {
                           subtaskId={subtask.id}
                           status={subtask.status}
                           notReady={cursor < index}
-                          onChange={updateSubtask}
+                          onChange={(subtaskId: any, edits: any) => {
+                            updateSubtask({variables: {subtaskId: subtaskId, edits: edits}});
+                          }}
                         />
                       </TableCell>
                       <TableCell className='text-center'>
@@ -116,13 +141,15 @@ export function SubtaskTable({cursor, subtasks}: SubTaskTableProps) {
                           defaultChecked={subtask.status === 'done'}
                           onCheckedChange={(checked: any) => {
                             if (!checked) {
-                              updateSubtask({subtaskId: subtask.id, edits: {status: 'in progress'}});
+                              const copy = Object.assign({}, subtask);
+                              copy.status = 'in progress';
+                              onChange(copy, false);
+                              updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'in progress'}}});
                             } else {
-                              updateSubtask({subtaskId: subtask.id, edits: {status: 'done'}});
-                            }
-
-                            if (audio) {
-                              audio.play();
+                              const copy = Object.assign({}, subtask);
+                              copy.status = 'done';
+                              onChange(copy, true);
+                              updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'done'}}});
                             }
                           }}
                           className='h-8 w-8'
@@ -146,8 +173,14 @@ export function SubtaskTable({cursor, subtasks}: SubTaskTableProps) {
                                 {subtasks.length > 1 ? '🤔' : 'This is the only subtask 😯'}
                               </DialogTitle>
                               <DialogDescription className='pt-4 space-y-6 text-lg'>
-                                {subtasks.length === 1 && <span>The <span className='text-primary underline'>Task</span> will also be deleted.</span>}
-                                <span>Remove <span className='text-primary'>`{subtask.title}`</span>?</span>
+                                {subtasks.length === 1 && (
+                                  <span>
+                                    The <span className='text-primary underline'>Task</span> will also be deleted.
+                                  </span>
+                                )}
+                                <span>
+                                  Remove <span className='text-primary'>`{subtask.title}`</span>?
+                                </span>
                               </DialogDescription>
                             </DialogHeader>
                             <DialogFooter>

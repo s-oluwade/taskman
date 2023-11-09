@@ -9,21 +9,23 @@ import {useRouter} from 'next/navigation';
 import {useState, useTransition} from 'react';
 import {options} from '../data/options';
 import {CreateTaskDueDatePicker} from './CreateTaskDueDatePicker';
-import {CreateTaskDocument} from '@/graphql/generated';
-import {useMutation, Mutation, useQuery} from 'urql';
+import {CreateTaskDocument, GetTasksDocument} from '@/graphql/generated';
+import {useMutation} from '@apollo/client';
 
 interface CreateTaskButtonProps {
-  taskListName: string;
+  tasklistName: string;
 }
 
-const CreateTaskButton = ({taskListName}: CreateTaskButtonProps) => {
+const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [title, setTitle] = useState('');
   const [label, setLabel] = useState('');
   const [priority, setPriority] = useState('');
   const [dueDate, setDueDate] = useState<string | null>(null);
-  const [createdTask, createTask] = useMutation(CreateTaskDocument);
+  const [createTask, {data, loading, error}] = useMutation(CreateTaskDocument, {
+    refetchQueries: [GetTasksDocument],
+  });
 
   async function onSubmit() {
     if (title === '' || label === '' || priority === '') {
@@ -32,12 +34,14 @@ const CreateTaskButton = ({taskListName}: CreateTaskButtonProps) => {
     }
 
     createTask({
-      task: {
-        taskListName,
-        title,
-        label,
-        priority,
-        dueDate,
+      variables: {
+        task: {
+          tasklistName,
+          title,
+          label,
+          priority,
+          dueDate,
+        },
       },
     });
 
@@ -111,7 +115,7 @@ const CreateTaskButton = ({taskListName}: CreateTaskButtonProps) => {
               <div>
                 <CreateTaskDueDatePicker onChange={changeDueDate} />
               </div>
-              <SheetClose  asChild>
+              <SheetClose asChild>
                 <Button onClick={onSubmit} type='submit'>
                   Create
                 </Button>

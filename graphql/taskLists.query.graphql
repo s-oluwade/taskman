@@ -1,15 +1,17 @@
-query GetTaskLists($names: [String]!) {
-  taskLists(names: $names) {
+query GetTasklists($names: [String]!) {
+  tasklists(names: $names) {
     id
     name
     userId
+    description
   }
 }
 
-query GetAllTaskLists {
-  allTaskLists {
+query GetAllTasklists {
+  allTasklists {
     id
     name
     userId
+    description
   }
 }

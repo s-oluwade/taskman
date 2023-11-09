@@ -2,15 +2,16 @@
 // that together define the "shape" of queries that are executed against
 // your data.
 export const typeDefs = `#graphql
-  type TaskList {
+  type Tasklist {
     id: Int!
     userId: String
     name: String # will be randomly generated if undefined
+    description: String
     tasks: [Task]!
   }
   type Task {
     id: Int!
-    taskListName: String!
+    tasklistName: String!
     title: String!
     label: String!
     priority: String!
@@ -29,19 +30,19 @@ export const typeDefs = `#graphql
     task: Task!
   }
   type Query {
-    allTaskLists: [TaskList]!
-    taskLists(names: [String]!): [TaskList]!
-    taskList(name: String!): TaskList
+    allTasklists: [Tasklist]!
+    tasklists(names: [String]!): [Tasklist]!
+    tasklist(name: String!): Tasklist
     allTasks: [Task]!
-    tasks(taskListName: String!): [Task]!
+    tasks(tasklistName: String!): [Task]!
     task(id: Int!): Task
     subtasks(taskId: Int!): [Subtask]!
     subtask(id: Int!): Subtask
   }
   type Mutation {
-    createTaskList(taskList: AddTaskListInput!): TaskList
-    deleteTaskList(id: Int!): [TaskList]
-    updateTaskList(id: Int!, edits: EditTaskListInput!): TaskList
+    createTasklist(tasklist: AddTasklistInput!): Tasklist
+    deleteTasklist(id: Int!): [Tasklist]
+    updateTasklist(id: Int!, edits: EditTasklistInput!): Tasklist
     addTask(task: AddTaskInput!): Task
     deleteTask(id: Int!): [Task]
     updateTask(id: Int!, edits: EditTaskInput!): Task
@@ -50,22 +51,24 @@ export const typeDefs = `#graphql
     updateSubtask(id: Int!, edits: EditSubtaskInput!): Subtask
     reorderSubtasks(subtaskId: Int!, newIndex: Int! ): [Subtask]
   }
-  input AddTaskListInput {
+  input AddTasklistInput {
     userId: Int
-    name: String
+    name: String!
+    description: String
   }
-  input EditTaskListInput {
-    userId: Int!
+  input EditTasklistInput {
+    name: String
+    description: String
   }
   input AddTaskInput {
-    taskListName: String!
+    tasklistName: String!
     title: String!
     label: String!
     priority: String!
     dueDate: String
   }
   input EditTaskInput {
-    taskListName: String
+    tasklistName: String
     title: String
     label: String
     priority: String

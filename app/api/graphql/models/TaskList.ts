@@ -1,18 +1,14 @@
-import {Model, Sequelize, DataTypes} from 'sequelize';
-import {faker} from '@faker-js/faker';
+import {DataTypes, Model, Sequelize} from 'sequelize';
 
-export default function _TaskList(sequelize: Sequelize) {
-  class TaskList extends Model {
+export default function _Tasklist(sequelize: Sequelize) {
+  class Tasklist extends Model {
     declare id: number;
     declare userId: number;
     declare name: string;
+    declare description: string;
   }
 
-  const adjective = faker.word.adjective();
-  const interjection = faker.word.interjection();
-  const phrase = adjective + '-' + interjection;
-
-  TaskList.init(
+  Tasklist.init(
     {
       id: {
         type: DataTypes.INTEGER.UNSIGNED,
@@ -27,7 +23,10 @@ export default function _TaskList(sequelize: Sequelize) {
         type: new DataTypes.STRING(128),
         allowNull: false,
         unique: true,
-        defaultValue: phrase,
+      },
+      description: {
+        type: new DataTypes.STRING(128),
+        allowNull: true,
       },
     },
     {
@@ -36,7 +35,8 @@ export default function _TaskList(sequelize: Sequelize) {
     }
   );
 
-  TaskList.sync();
+  Tasklist.sync();
+  // Tasklist.sync({force: false, alter: true});
 
-  return TaskList;
+  return Tasklist;
 }

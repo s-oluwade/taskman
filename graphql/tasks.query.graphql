@@ -1,5 +1,5 @@
-query GetTasks($taskListName: String!) {
-  tasks(taskListName: $taskListName) {
+query GetTasks($tasklistName: String!) {
+  tasks(tasklistName: $tasklistName) {
     cursor
     dueDate
     id
@@ -7,7 +7,7 @@ query GetTasks($taskListName: String!) {
     priority
     progress
     status
-    taskListName
+    tasklistName
     title
     subtasks {
       id
@@ -28,7 +28,7 @@ query GetAllTasks {
     priority
     progress
     status
-    taskListName
+    tasklistName
     title
     subtasks {
       id

@@ -8,46 +8,45 @@
  *
  */
 
-import {GetTasksDocument, GetAllTasksDocument} from '@/graphql/generated';
+import {GetTasksDocument, GetAllTasksDocument, GetTasklistsDocument} from '@/graphql/generated';
 import {useQuery} from '@urql/next';
-import {Suspense, useEffect, useState} from 'react';
+import {Suspense, useEffect, useMemo, useState} from 'react';
 import TaskCalendar from './components/TaskCalendar';
 import TaskTable from './components/TaskTable';
 import {Task} from '@/graphql/types';
 import React from 'react';
 import {useSearchParams} from 'next/navigation';
+import {Button} from '@/components/ui/button';
+import {ArrowLeftIcon} from '@radix-ui/react-icons';
+import {buttonVariants} from '@/components/ui/button';
+import Link from 'next/link';
+import {useSuspenseQuery} from '@apollo/experimental-nextjs-app-support/ssr';
 
 interface TasksPageProps {
-  params: {taskListName: string};
+  params: {tasklist: string};
 }
 
 export default function TasksPage({params}: TasksPageProps) {
-  const [results] = useQuery({
-    query: GetAllTasksDocument,
-    requestPolicy: 'cache-and-network',
-    // variables: {taskListName:checkLocalStorage(params.taskListName)},
-  });
 
   const searchParams = useSearchParams();
   const date = searchParams.get('date');
-
   const [tasks, setTasks] = useState<NonNullable<Task>[]>([]);
+  const {data} = useSuspenseQuery(GetTasksDocument, {variables: {tasklistName: params.tasklist}});
 
   useEffect(() => {
-    if (results.data?.allTasks) {
-      let tasks: any[] =
-        results.data?.allTasks.filter((task) => task?.taskListName === checkLocalStorage(params.taskListName)) ?? [];
+    if (data?.tasks) {
+      let tasks: any[] = data?.tasks.filter((task) => task?.tasklistName === checkLocalStorage(params.tasklist)) ?? [];
       if (date) {
         tasks = tasks.filter((task) => task?.dueDate && task.dueDate.includes(date));
       }
       setTasks(tasks);
     }
-  }, [results, date, params.taskListName]);
+  }, [data, date, params.tasklist]);
 
   function checkLocalStorage(name: string): string {
     if (typeof window !== 'undefined') {
-      let localTaskListNames = localStorage.getItem('localTaskListNames');
-      if (localTaskListNames && JSON.parse(localTaskListNames).includes(name)) {
+      let localTasklistNames = localStorage.getItem('localTaskListNames');
+      if (localTasklistNames && JSON.parse(localTasklistNames).includes(name)) {
         return name;
       }
     }
@@ -57,19 +56,25 @@ export default function TasksPage({params}: TasksPageProps) {
   return (
     <Suspense>
       <div>
+        <div className='px-8'>
+          {/* <Button size={'default'} variant={'outline'}></Button> */}
+          <Link href={'/tasklists'} className={buttonVariants({variant: 'outline'})}>
+            <ArrowLeftIcon className='mr-2' /> Back to Tasklists
+          </Link>
+        </div>
         <section className='my-10'>
           <div className='rounded-[0.5rem]'>
-            <div className='h-full flex flex-1 flex-col space-y-8 md:p-8 md:flex'>
-              <div className='flex flex-col md:flex-row justify-between grow-0 md:items-start items-center'>
+            <div className='h-full flex flex-1 flex-col space-y-8 md:p-8 md:flex px-2'>
+              <div className='flex flex-col md:flex-row justify-between grow-0 items-start'>
                 <div className='p-2 space-y-2'>
                   <h2 className='text-2xl font-bold tracking-tight'>Welcome</h2>
                   <p className='text-muted-foreground'>
-                    Here are the tasks in <span className='text-foreground'>{params.taskListName}</span>.
+                    Here are the tasks in <span className='text-foreground'>{params.tasklist}</span>.
                   </p>
                 </div>
                 <TaskCalendar tasks={tasks} />
               </div>
-              <TaskTable taskListName={params.taskListName} tasks={tasks} />
+              <TaskTable tasklistName={params.tasklist} tasks={tasks} />
             </div>
           </div>
         </section>

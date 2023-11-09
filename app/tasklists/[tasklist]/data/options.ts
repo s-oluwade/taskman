@@ -70,7 +70,7 @@ export const options = {
     {
       label: 'High',
       value: 'high',
-      icon: ExclamationTriangleIcon,
+      icon: ArrowUpIcon,
     },
   ],
 } as const;

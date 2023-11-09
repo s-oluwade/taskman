@@ -1,17 +1,13 @@
 'use client';
 
-import {Button} from '@/components/ui/button';
-import {Input} from '@/components/ui/input';
-import {Label} from '@/components/ui/label';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select-for-priority';
-import {Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from '@/components/ui/sheet';
-import {useRouter} from 'next/navigation';
-import {useState, useTransition} from 'react';
-import {options} from '../data/options';
-import {DueDatePicker} from './CreateTaskDueDatePicker';
-import {AddSubtaskDocument} from '@/graphql/generated';
-import {useMutation, Mutation, useQuery} from 'urql';
-import { PaperPlaneIcon } from '@radix-ui/react-icons';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { AddSubtaskDocument, GetTasksDocument } from '@/graphql/generated';
+import { useMutation } from '@apollo/client';
+import { useRouter } from 'next/navigation';
+import { useState, useTransition } from 'react';
 
 interface AddSubtaskButtonProps {
   taskId: number;
@@ -21,7 +17,9 @@ const AddSubtaskButton = ({taskId}: AddSubtaskButtonProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [title, setTitle] = useState('');
-  const [addedSubtask, addSubtask] = useMutation(AddSubtaskDocument);
+  const [addSubtask, {data, loading, error}] = useMutation(AddSubtaskDocument, {
+    refetchQueries: [GetTasksDocument],
+  });
 
   async function onSubmit() {
     if (!taskId || title === '') {
@@ -29,9 +27,11 @@ const AddSubtaskButton = ({taskId}: AddSubtaskButtonProps) => {
     }
 
     addSubtask({
-      input: {
-        title,
-        taskId,
+      variables: {
+        input: {
+          title,
+          taskId,
+        },
       },
     });
   }
@@ -39,7 +39,7 @@ const AddSubtaskButton = ({taskId}: AddSubtaskButtonProps) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-      <Button variant={'outline'}>+</Button>
+        <Button variant={'outline'}>+</Button>
       </SheetTrigger>
       <SheetContent className='h-52' side={'bottom'}>
         <SheetHeader>
@@ -61,7 +61,7 @@ const AddSubtaskButton = ({taskId}: AddSubtaskButtonProps) => {
           </div>
           <SheetClose asChild>
             <Button onClick={onSubmit} type='submit'>
-                {/* <PaperPlaneIcon className='h-9 w-9 text-muted-foreground' /> */}
+              {/* <PaperPlaneIcon className='h-9 w-9 text-muted-foreground' /> */}
               Add
             </Button>
             {/* <Button disabled>

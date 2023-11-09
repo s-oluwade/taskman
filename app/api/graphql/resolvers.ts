@@ -1,7 +1,7 @@
 import {Sequelize} from 'sequelize';
 import _Task from './models/Task';
 import _Subtask from './models/Subtask';
-import _TaskList from './models/TaskList';
+import _Tasklist from './models/Tasklist';
 
 const sequelize = new Sequelize(process.env.MYSQLDATABASE!, process.env.MYSQLUSER!, process.env.MYSQLPASSWORD, {
   host: process.env.MYSQLHOST,
@@ -43,23 +43,23 @@ try {
 
 const Task = _Task(sequelize);
 const Subtask = _Subtask(sequelize);
-const TaskList = _TaskList(sequelize);
+const Tasklist = _Tasklist(sequelize);
 
 export const resolvers = {
   Query: {
     tasks: async (obj: any, args: any, context: any, info: any) =>
-      (await Task.findAll()).filter((task) => task.taskListName === args.taskListName),
+      (await Task.findAll()).filter((task) => task.tasklistName === args.tasklistName),
     allTasks: async () => await Task.findAll(),
     task: async (obj: any, args: any, context: any, info: any) => await Task.findByPk(args.id),
     subtasks: async (obj: any, args: any, context: any, info: any) =>
       (await Subtask.findAll()).filter((subtask) => subtask.taskId === args.taskId),
     subtask: async (obj: any, args: any, context: any, info: any) => await Subtask.findByPk(args.id),
-    taskList: async (obj: any, args: any, context: any, info: any) =>
-      await TaskList.findOne({where: {name: args.name}}),
-    taskLists: async (obj: any, args: any, context: any, info: any) => {
-      return (await TaskList.findAll()).filter((taskList) => args.names.includes(taskList.name));
+    tasklist: async (obj: any, args: any, context: any, info: any) =>
+      await Tasklist.findOne({where: {name: args.name}}),
+    tasklists: async (obj: any, args: any, context: any, info: any) => {
+      return (await Tasklist.findAll()).filter((tasklist) => args.names.includes(tasklist.name));
     },
-    allTaskLists: async () => await TaskList.findAll(),
+    allTasklists: async () => await Tasklist.findAll(),
   },
   Task: {
     subtasks: async (parent: any) =>
@@ -68,38 +68,45 @@ export const resolvers = {
   Subtask: {
     task: async (parent: any) => await Task.findOne({where: {id: parent.taskId}}),
   },
-  TaskList: {
-    tasks: async (parent: any) => await Task.findAll({where: {taskListName: parent.name}}),
+  Tasklist: {
+    tasks: async (parent: any) => await Task.findAll({where: {tasklistName: parent.name}}),
   },
   Mutation: {
-    async deleteTaskList(_: any, args: any) {
-      const taskList = await TaskList.findOne({where: {id: args.id}});
-      taskList?.destroy();
+    async deleteTasklist(_: any, args: any) {
+      const tasklist = await Tasklist.findOne({where: {id: args.id}});
+      // destroy all subtasks
+      (await Task.findAll({where: {tasklistName: tasklist?.name}}))?.forEach((task) => {
+        Subtask.destroy({where: {taskId: task.id}});
+      });
+      // destroy all tasks
+      Task.destroy({where: {tasklistName: tasklist?.name}});
+      // destroy the tasklist
+      tasklist?.destroy();
 
-      return await TaskList.findAll();
+      return await Tasklist.findAll();
     },
     /*
      * args.task includes:
      * title, label, priority, dueDate?
      */
-    async createTaskList(_: any, args: any) {
-      // if (!args.taskList.name) {
+    async createTasklist(_: any, args: any) {
+      // if (!args.tasklist.name) {
       //   const adjective = faker.word.adjective();
       //   const interjection = faker.word.interjection()
       //   const phrase = adjective + "-" + interjection;
 
-      //   args.taskList.name = phrase;
+      //   args.tasklist.name = phrase;
       // }
-      const createdTaskList = await TaskList.create({
-        ...args.taskList,
+      const createdTasklist = await Tasklist.create({
+        ...args.tasklist,
       });
 
-      return createdTaskList;
+      return createdTasklist;
     },
-    async updateTaskList(_: any, args: any) {
-      await TaskList.update(args.edits, {where: {id: args.id}});
+    async updateTasklist(_: any, args: any) {
+      await Tasklist.update(args.edits, {where: {id: args.id}});
 
-      return await TaskList.findOne({where: {id: args.id}});
+      return await Tasklist.findOne({where: {id: args.id}});
     },
     async deleteTask(_: any, args: any) {
       const task = await Task.findOne({where: {id: args.id}});

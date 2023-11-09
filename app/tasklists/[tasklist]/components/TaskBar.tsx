@@ -14,6 +14,7 @@ import {
 import {
   ArrowDownIcon,
   ArrowRightIcon,
+  ArrowUpIcon,
   CheckCircledIcon,
   CircleIcon,
   ClockIcon,
@@ -32,15 +33,15 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/c
 import {ToastAction} from '@/components/ui/toast';
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from '@/components/ui/tooltip';
 import {useToast} from '@/components/ui/use-toast';
-import {DeleteTaskDocument, EditTaskDocument} from '@/graphql/generated';
-import {Task} from '@/graphql/types';
+import {DeleteTaskDocument, EditTaskDocument, GetTasksDocument} from '@/graphql/generated';
+import {Subtask, Task} from '@/graphql/types';
 import {addDays} from 'date-fns';
 import React, {useEffect, useState, useTransition} from 'react';
-import {useMutation} from 'urql';
 import {options} from '../data/options';
 import {TaskDueDatePicker} from './TaskDueDatePicker';
 import {SubtaskTable} from './SubtaskTable';
 import styles from './TaskTable.module.css';
+import {useMutation} from '@apollo/client';
 
 interface TaskBarProps {
   task: NonNullable<Task>;
@@ -56,15 +57,24 @@ const icons = {
   canceled: CrossCircledIcon,
   low: ArrowDownIcon,
   medium: ArrowRightIcon,
-  high: ExclamationTriangleIcon,
+  high: ArrowUpIcon,
 };
 
 const TaskBar = ({task, width, index}: TaskBarProps) => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [isPending, startTransition] = useTransition();
   const {toast} = useToast();
-  const [updatedTaskResult, updateTask] = useMutation(EditTaskDocument);
-  const [deletedTaskResult, deleteTask] = useMutation(DeleteTaskDocument);
+  const [updateTask, {data: editData, loading: editLoading, error: editError}] = useMutation(EditTaskDocument, {
+    refetchQueries: [GetTasksDocument],
+  });
+  const [deleteTask, {data: deleteData, loading: deleteLoading, error: deleteError}] = useMutation(DeleteTaskDocument, {
+    refetchQueries: [GetTasksDocument],
+  });
+  const [optimizedTask, setOptimizedTask] = useState(task);
+
+  useEffect(() => {
+    setOptimizedTask(task);
+  }, [task]);
 
   const toggleRow = (rowId: number) => {
     if (expandedRows.includes(rowId)) {
@@ -74,12 +84,37 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
     }
   };
 
+  function speedOptimizer(updatedSubtask: Subtask, advance: boolean) {
+    // filter out the old subtask and add the updated subtask to the optimizedTask
+    // then add the new subtask to the optimizedTask
+    const newSubtasks = task.subtasks.filter((subtask) => subtask.id !== updatedSubtask.id);
+    newSubtasks.push(updatedSubtask);
+    const newProgress = Math.ceil(
+      (newSubtasks.filter((subtask) => subtask.status === 'done').length / newSubtasks.length) * 100
+    );
+    const copy = Object.assign({}, task);
+    if (newProgress === 100) {
+      copy.status = 'done';
+    } else if (newProgress === 0) {
+      copy.status = 'todo';
+    } else {
+      copy.status = 'in progress';
+    }
+    if (advance) {
+      copy.cursor++;
+    } else {
+      copy.cursor--;
+    }
+    copy.progress = newProgress;
+    setOptimizedTask({...copy, subtasks: newSubtasks.sort((a, b) => a.index - b.index)});
+  }
+
   function TaskPriorityChanger() {
     return (
       <div className='flex items-center justify-center'>
         <Select
           onValueChange={(newVal: any) => {
-            updateTask({id: task.id, edits: {priority: newVal}});
+            updateTask({variables: {id: task.id, edits: {priority: newVal}}});
           }}
           value={task.priority}>
           <SelectTrigger className='lg:w-[130px]'>
@@ -119,8 +154,10 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
                         onClick={() => {
                           clearTimeout(timeout);
                           updateTask({
-                            id: task.id,
-                            edits: {dueDate: addDays(new Date(task.dueDate!), 0).toLocaleString()},
+                            variables: {
+                              id: task.id,
+                              edits: {dueDate: addDays(new Date(task.dueDate!), 0).toLocaleString()},
+                            },
                           });
                           dismiss();
                         }}
@@ -129,7 +166,12 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
                       </ToastAction>
                     ),
                   });
-                  updateTask({id: task.id, edits: {dueDate: addDays(new Date(task.dueDate!), 1).toLocaleString()}});
+                  updateTask({
+                    variables: {
+                      id: task.id,
+                      edits: {dueDate: addDays(new Date(task.dueDate!), 1).toLocaleString()},
+                    },
+                  });
                   const timeout = setTimeout(() => {
                     dismiss();
                   }, 5000);
@@ -174,7 +216,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
             <DialogClose>
               <Button
                 onClick={async () => {
-                  await deleteTask({id});
+                  await deleteTask({variables: {id}});
                 }}
                 type='submit'>
                 Delete
@@ -190,10 +232,10 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
     <React.Fragment>
       <tr>
         <td colSpan={width}>
-          <Progress value={task.progress} />
+          <Progress value={optimizedTask.progress} />
         </td>
       </tr>
-      <tr className={styles.tableRow} onClick={() => toggleRow(index)}>
+      <tr className={styles.tableRow} title='Click to view subtasks' onClick={() => toggleRow(index)}>
         <td className={`${styles.tableCell} text-center`}>
           <div className='flex items-center'>
             <span className='whitespace-nowrap hidden md:inline-block'>TASK-{index + 1}</span>
@@ -223,7 +265,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
               {TaskPriorityChanger()}
               <TaskDueDatePicker
                 onChange={(newDate) => {
-                  updateTask({id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}});
+                  updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});
                 }}
                 dateString={task.dueDate ?? null}
               />
@@ -237,7 +279,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
         <td className={`${styles.tableCell} text-center hidden lg:table-cell`}>
           <TaskDueDatePicker
             onChange={(newDate) => {
-              updateTask({id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}});
+              updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});
             }}
             dateString={task.dueDate ?? null}
           />
@@ -253,7 +295,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
       <tr>
         <td colSpan={width}>
           <div className={`${styles.expandedRow} ${expandedRows.includes(index) ? `${styles.show}` : ''}`}>
-            <SubtaskTable subtasks={task.subtasks} cursor={task.cursor} />
+            <SubtaskTable onChange={speedOptimizer} subtasks={optimizedTask.subtasks} cursor={optimizedTask.cursor} />
           </div>
         </td>
       </tr>

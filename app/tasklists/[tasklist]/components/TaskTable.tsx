@@ -10,16 +10,16 @@ import {useEffect, useState} from 'react';
 
 interface TasksProps {
   tasks: Task[];
-  taskListName: string;
+  tasklistName: string;
 }
 
-const TaskTable = ({tasks, taskListName}: TasksProps) => {
+const TaskTable = ({tasks, tasklistName}: TasksProps) => {
   const colSpan = 7;
 
   return (
-    <div className='space-y-4 border p-2 rounded min-w-fit'>
+    <div className='space-y-4 border border-gray-400 dark:border-border p-2 rounded min-w-fit'>
       <div className='flex justify-end lg:hidden'>
-        <CreateTaskButton taskListName={taskListName} />
+        <CreateTaskButton tasklistName={tasklistName} />
       </div>
       <table className={styles.table}>
         <thead className={styles.tableHeading}>
@@ -34,7 +34,7 @@ const TaskTable = ({tasks, taskListName}: TasksProps) => {
             </th>
             <th className={`${styles.tableHead} hidden lg:table-cell`}>priority</th>
             <th className={`${styles.tableHead} hidden lg:table-cell`}>due</th>
-            <th className='hidden lg:table-cell' ><CreateTaskButton taskListName={taskListName} /></th>
+            <th className='hidden lg:table-cell' ><CreateTaskButton tasklistName={tasklistName} /></th>
           </tr>
         </thead>
         <tbody className={styles.tableBody}>
