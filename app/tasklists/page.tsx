@@ -12,22 +12,22 @@ import EditTaskListDialogButton from './components/EditTaskListDialogButton';
 import DeleteTaskListDialogButton from './components/DeleteTaskListDialogButton';
 import {useSuspenseQuery} from '@apollo/experimental-nextjs-app-support/ssr';
 import {Input} from '@/components/ui/input';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 const TasksListPage = () => {
   const [taskLists, setTasklists] = useState<Tasklist[]>([]);
   // const {data} = useSuspenseQuery(GetAllTasklistsDocument);
   const localTaskListNames =
     typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('localTaskListNames') ?? '[]') : [];
-  const {data} = useSuspenseQuery(GetTasklistsDocument, {variables: {names: localTaskListNames}});
+  const [localNames, setLocalNames] = useState<string[]>(localTaskListNames);
+  const {data} = useSuspenseQuery(GetTasklistsDocument, {variables: {names: localNames}});
 
   useEffect(() => {
-    if (data?.tasklists) {
+    if (data.tasklists) {
       const t: any = data.tasklists;
       setTasklists(t);
     }
 
-    // localStorage.getItem('localTaskListNames');
-    console.log();
   }, [data.tasklists]);
 
   // useEffect(() => {
@@ -40,7 +40,7 @@ const TasksListPage = () => {
   return (
     <section className='my-6 px-2'>
       <div className='flex w-full max-w-sm items-center space-x-2 mb-6'>
-        <form
+        {/* <form
           action=''
           className='flex gap-2'
           onSubmit={(e) => {
@@ -53,11 +53,11 @@ const TasksListPage = () => {
           <Button className='whitespace-nowrap' type='submit'>
             Add to Local Storage
           </Button>
-        </form>
+        </form> */}
       </div>
       <div className='text-xl'>Your Tasklists</div>
       <div className='grid grid-cols-1 gap-8 mt-8 xl:mt-12 xl:gap-12 md:grid-cols-2 xl:grid-cols-3'>
-        {taskLists.map((tasklist) => (
+        {taskLists.length > 0 ? taskLists.map((tasklist) => (
           <div key={tasklist.id} className='p-8 space-y-3 border-2 border-blue-400 dark:border-blue-300 rounded-xl'>
             <div className='flex justify-between'>
               <span className='inline-block text-blue-500 dark:text-blue-400'>
@@ -115,8 +115,8 @@ const TasksListPage = () => {
               </svg>
             </Link>
           </div>
-        ))}
-        <AddTasklistDialogButton />
+        )): (<div>You have no task list</div>)}
+        <AddTasklistDialogButton onChange={setLocalNames} />
       </div>
     </section>
   );

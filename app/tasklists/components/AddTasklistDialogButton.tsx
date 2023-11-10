@@ -20,7 +20,11 @@ import {Textarea} from '@/components/ui/textarea';
 // import {useMutation, useQuery} from '@urql/next';
 import {useMutation} from '@apollo/client';
 
-export function AddTasklistDialogButton() {
+interface AddTasklistDialogButtonProps {
+  onChange: (value: string[]) => void;
+}
+
+export function AddTasklistDialogButton({onChange}: AddTasklistDialogButtonProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isError, setIsError] = useState(false);
@@ -29,14 +33,20 @@ export function AddTasklistDialogButton() {
   const [createTasklist, {data, loading, error}] = useMutation(CreateTasklistDocument, {
     refetchQueries: [GetTasklistsDocument],
   });
-  // const [result, createTasklist] = useMutation(CreateTasklistDocument);
 
   function onSubmit(e: React.FormEvent<HTMLButtonElement>) {
     if (name.length === 0) {
-      setIsError(true);
       e.preventDefault();
+      setIsError(true);
       return;
     }
+
+    const localTaskListNames =
+      typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('localTaskListNames') ?? '[]') : [];
+
+    localTaskListNames.push(name.toLowerCase());
+    localStorage.setItem('localTaskListNames', JSON.stringify(localTaskListNames));
+    onChange(localTaskListNames);
 
     createTasklist({variables: {tasklist: {name, description, userId: user?.userId}}});
   }

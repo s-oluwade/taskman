@@ -27,11 +27,13 @@ interface TasksPageProps {
 }
 
 export default function TasksPage({params}: TasksPageProps) {
-
   const searchParams = useSearchParams();
   const date = searchParams.get('date');
   const [tasks, setTasks] = useState<NonNullable<Task>[]>([]);
-  const {data} = useSuspenseQuery(GetTasksDocument, {variables: {tasklistName: params.tasklist}});
+  const {data} = useSuspenseQuery(GetTasksDocument, {
+    variables: {tasklistName: params.tasklist},
+    fetchPolicy: 'network-only',
+  });
 
   useEffect(() => {
     if (data?.tasks) {

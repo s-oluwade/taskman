@@ -21,7 +21,7 @@ interface DeleteTaskListDialogButtonProps {
 
 const DeleteTaskListDialogButton = ({tasklistId}: DeleteTaskListDialogButtonProps) => {
   // const [result, deleteTasklist] = useMutation(DeleteTasklistDocument);
-  const [deleteTasklist, {data, loading, error}] = useMutation(DeleteTasklistDocument, {refetchQueries: [GetAllTasklistsDocument]});
+  const [deleteTasklist, {data, loading, error}] = useMutation(DeleteTasklistDocument, {refetchQueries: [GetTasklistsDocument]});
 
   return (
     <AlertDialog>

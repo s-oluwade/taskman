@@ -19,7 +19,7 @@ const TaskCalendar = ({tasks}: TaskCalendarProps) => {
     const url = qs.stringifyUrl({
       url: window.location.href,
       query: {
-        date: date?.toLocaleDateString(),
+        date: date?.toLocaleDateString('en-US'),
       },
     });
     
