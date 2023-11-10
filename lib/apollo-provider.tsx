@@ -10,7 +10,7 @@ import {
 
 function makeClient() {
   const httpLink = new HttpLink({
-      uri: 'https://main--time-pav6zq.apollographos.net/graphql',
+      uri: process.env.NEXT_PUBLIC_GRAPHQL_API_URL,
   });
 
   return new NextSSRApolloClient({
@@ -34,11 +34,8 @@ function makeClient() {
 
 export function ApolloWrapper({ children }: React.PropsWithChildren) {
   return (
-    // <ApolloNextAppProvider makeClient={makeClient}>
-    <div>
-
+    <ApolloNextAppProvider makeClient={makeClient}>
       {children}
-    </div>
-    // </ApolloNextAppProvider>
+    </ApolloNextAppProvider>
   )
 }
