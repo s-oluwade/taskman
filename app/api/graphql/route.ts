@@ -4,6 +4,8 @@ import { NextRequest } from 'next/server';
 import { resolvers } from './resolvers';
 import { typeDefs } from './schema';
 
+export const maxDuration = 10;
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
