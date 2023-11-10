@@ -24,6 +24,7 @@ const TaskCalendar = ({tasks}: TaskCalendarProps) => {
     });
     
     router.push(url);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
   return (
