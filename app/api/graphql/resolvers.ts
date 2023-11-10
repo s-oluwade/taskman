@@ -34,12 +34,12 @@ const sequelize = new Sequelize(process.env.MYSQLDATABASE!, process.env.MYSQLUSE
 //     console.log('showAllSchemas ERROR', err);
 //   });
 
-try {
-  await sequelize.authenticate();
-  console.log('Connection to sql database through sequelize has been established.');
-} catch (error) {
-  console.error('Unable to connect to the database:', error);
-}
+// try {
+//   await sequelize.authenticate();
+//   console.log('Connection to sql database through sequelize has been established.');
+// } catch (error) {
+//   console.error('Unable to connect to the database:', error);
+// }
 
 const Task = _Task(sequelize);
 const Subtask = _Subtask(sequelize);
