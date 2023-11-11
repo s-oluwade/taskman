@@ -1,22 +1,25 @@
-"use client";
+'use client';
 
-import { ApolloLink, HttpLink } from "@apollo/client";
+import {ApolloLink, HttpLink} from '@apollo/client';
 import {
   ApolloNextAppProvider,
   NextSSRInMemoryCache,
   NextSSRApolloClient,
   SSRMultipartLink,
-} from "@apollo/experimental-nextjs-app-support/ssr";
+} from '@apollo/experimental-nextjs-app-support/ssr';
 
 function makeClient() {
   const httpLink = new HttpLink({
-      uri: 'https://lazy-taskman-graphql-api.onrender.com/',
+    uri: process.env.NEXT_PUBLIC_GRAPHQL_API_URL,
+    fetchOptions: {
+      mode: 'no-cors'
+    }
   });
 
   return new NextSSRApolloClient({
     cache: new NextSSRInMemoryCache(),
     link:
-      typeof window === "undefined"
+      typeof window === 'undefined'
         ? ApolloLink.from([
             new SSRMultipartLink({
               stripDefer: true,
@@ -24,18 +27,15 @@ function makeClient() {
             httpLink,
           ])
         : httpLink,
-        defaultOptions: {
-          watchQuery: {
-            nextFetchPolicy: 'cache-and-network'
-          }
-        }
+    defaultOptions: {
+      watchQuery: {
+        nextFetchPolicy: 'cache-and-network',
+        errorPolicy: 'all',
+      },
+    },
   });
 }
 
-export function ApolloWrapper({ children }: React.PropsWithChildren) {
-  return (
-    <ApolloNextAppProvider makeClient={makeClient}>
-      {children}
-    </ApolloNextAppProvider>
-  )
+export function ApolloWrapper({children}: React.PropsWithChildren) {
+  return <ApolloNextAppProvider makeClient={makeClient}>{children}</ApolloNextAppProvider>;
 }
