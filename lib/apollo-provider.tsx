@@ -11,9 +11,9 @@ import {
 function makeClient() {
   const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GRAPHQL_API_URL,
-    fetchOptions: {
-      mode: 'no-cors'
-    }
+    // fetchOptions: {
+    //   mode: 'no-cors'
+    // }
   });
 
   return new NextSSRApolloClient({
