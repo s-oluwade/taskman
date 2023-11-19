@@ -8,19 +8,16 @@
  *
  */
 
-import {GetTasksDocument, GetAllTasksDocument, GetTasklistsDocument} from '@/graphql/generated';
-import {useQuery} from '@urql/next';
-import {Suspense, useEffect, useMemo, useState} from 'react';
+import { buttonVariants } from '@/components/ui/button';
+import { GetTasksDocument, GetTasksDueDatesDocument } from '@/graphql/generated';
+import { Task } from '@/graphql/types';
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr';
+import { ArrowLeftIcon } from '@radix-ui/react-icons';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 import TaskCalendar from './components/TaskCalendar';
 import TaskTable from './components/TaskTable';
-import {Task} from '@/graphql/types';
-import React from 'react';
-import {useSearchParams} from 'next/navigation';
-import {Button} from '@/components/ui/button';
-import {ArrowLeftIcon} from '@radix-ui/react-icons';
-import {buttonVariants} from '@/components/ui/button';
-import Link from 'next/link';
-import {useSuspenseQuery} from '@apollo/experimental-nextjs-app-support/ssr';
 
 interface TasksPageProps {
   params: {tasklist: string};
@@ -30,7 +27,13 @@ export default function TasksPage({params}: TasksPageProps) {
   const searchParams = useSearchParams();
   const date = searchParams.get('date');
   const [tasks, setTasks] = useState<NonNullable<Task>[]>([]);
+  const [calendarTasks, setCalendarTasks] = useState<NonNullable<Task>[]>([]);
   const {data} = useSuspenseQuery(GetTasksDocument, {
+    variables: {tasklistName: params.tasklist},
+    fetchPolicy: 'network-only',
+  });
+
+  const {data: calendarData} = useSuspenseQuery(GetTasksDueDatesDocument, {
     variables: {tasklistName: params.tasklist},
     fetchPolicy: 'network-only',
   });
@@ -44,6 +47,13 @@ export default function TasksPage({params}: TasksPageProps) {
       setTasks(tasks);
     }
   }, [data, date, params.tasklist]);
+
+  useEffect(() => {
+    if (calendarData?.tasks) {
+      let tasks: any[] = calendarData?.tasks.filter((task) => task?.tasklistName === checkLocalStorage(params.tasklist)) ?? [];
+      setCalendarTasks(tasks);
+    }
+  }, [calendarData, params.tasklist]);
 
   function checkLocalStorage(name: string): string {
     if (typeof window !== 'undefined') {
@@ -74,7 +84,7 @@ export default function TasksPage({params}: TasksPageProps) {
                     Here are the tasks in <span className='text-foreground'>{params.tasklist}</span>.
                   </p>
                 </div>
-                <TaskCalendar tasks={tasks} />
+                <TaskCalendar tasks={calendarTasks} />
               </div>
               <TaskTable tasklistName={params.tasklist} tasks={tasks} />
             </div>

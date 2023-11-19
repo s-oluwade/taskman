@@ -9,6 +9,7 @@ query GetTasks($tasklistName: String!) {
     status
     tasklistName
     title
+    animation
     subtasks {
       id
       index
@@ -30,6 +31,7 @@ query GetAllTasks {
     status
     tasklistName
     title
+    animation
     subtasks {
       id
       index
@@ -37,5 +39,13 @@ query GetAllTasks {
       taskId
       title
     }
+  }
+}
+
+query GetTasksDueDates($tasklistName: String!) {
+  tasks(tasklistName: $tasklistName) {
+    id
+    dueDate
+    tasklistName
   }
 }

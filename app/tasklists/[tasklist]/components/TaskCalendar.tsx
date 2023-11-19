@@ -13,6 +13,7 @@ interface TaskCalendarProps {
 
 const TaskCalendar = ({tasks}: TaskCalendarProps) => {
   const [date, setDate] = useState<Date | undefined>(undefined);
+  const [taskDays, setTaskDays] = useState<Date[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -26,6 +27,10 @@ const TaskCalendar = ({tasks}: TaskCalendarProps) => {
     router.push(url);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
+
+  useEffect(() => {
+    setTaskDays(tasks.filter((task) => task.dueDate).map((task) => new Date(task.dueDate!)));
+  }, [tasks, router])
 
   return (
     <Accordion className='w-64' type='single' collapsible>
@@ -50,7 +55,7 @@ const TaskCalendar = ({tasks}: TaskCalendarProps) => {
         </AccordionTrigger>
         <AccordionContent>
           <Calendar
-            bookedDays={tasks.filter((task) => task.dueDate).map((task) => new Date(task.dueDate!))}
+            bookedDays={taskDays}
             mode='single'
             selected={date}
             onSelect={setDate}

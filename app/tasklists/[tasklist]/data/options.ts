@@ -14,19 +14,100 @@ import {
 export const options = {
   labels: [
     {
-      value: 'bug',
-      label: 'Bug',
-      icon: null,
+      value: 'art',
+      label: 'Art',
     },
     {
-      value: 'feature',
-      label: 'Feature',
-      icon: null,
+      value: 'automotive',
+      label: 'Automotive',
     },
     {
-      value: 'documentation',
-      label: 'Documentation',
-      icon: null,
+      value: 'beauty',
+      label: 'Beauty',
+    },
+    {
+      value: 'business',
+      label: 'Business',
+    },
+    {
+      value: 'delivery',
+      label: 'Delivery',
+    },
+    {
+      value: 'diy',
+      label: 'DIY',
+    },
+    {
+      value: 'ecommerce',
+      label: 'Ecommerce',
+    },
+    {
+      value: 'editing',
+      label: 'Editing',
+    },
+    {
+      value: 'education',
+      label: 'Education',
+    },
+    {
+      value: 'family',
+      label: 'Family',
+    },
+    {
+      value: 'finance',
+      label: 'Finance',
+    },
+    {
+      value: 'fitness',
+      label: 'Fitness',
+    },
+    {
+      value: 'food',
+      label: 'Food',
+    },
+    {
+      value: 'gaming',
+      label: 'Gaming',
+    },
+    {
+      value: 'garden',
+      label: 'Garden',
+    },
+    {
+      value: 'health',
+      label: 'Health',
+    },
+    {
+      value: 'holidays',
+      label: 'Holidays',
+    },
+    {
+      value: 'office',
+      label: 'Office',
+    },
+    {
+      value: 'people',
+      label: 'People',
+    },
+    {
+      value: 'programming',
+      label: 'Programming',
+    },
+    {
+      value: 'religion',
+      label: 'Religion',
+    },
+    {
+      value: 'shopping',
+      label: 'Shopping',
+    },
+    {
+      value: 'summer',
+      label: 'Summer',
+    },
+    {
+      value: 'travel',
+      label: 'Travel',
     },
   ],
   statuses: [

@@ -2,26 +2,24 @@
 
 import React, {useEffect, useState} from 'react';
 import Lottie from 'lottie-react';
-import * as shootingstarsdark from '@/animations/wired-outline-1865-shooting-stars.json';
-import * as shootingstarslight from '@/animations/wired-outline-1865-shooting-stars-light.json';
+import { animations } from '@/animations/animationMapping';
 
 interface AnimatingIconProps {
-  animationIndex: number;
+  animationTag: string | null | undefined;
 }
 
-const AnimatingIcon = ({animationIndex}: AnimatingIconProps) => {
-  const [animation, setAnimation] = useState<{[key: string]: any}>(shootingstarslight);
+const AnimatingIcon = ({animationTag}: AnimatingIconProps) => {
+  const [animation, setAnimation] = useState<{[key: string]: any}>(animations['shooting-stars']);
 
   useEffect(() => {
-    switch (animationIndex) {
-      case 0:
-        setAnimation(shootingstarslight);
-        break;
-
-      default:
-        break;
+    if (animationTag && Object.keys(animations).includes(animationTag)) {
+      setAnimation((animations as {[key: string]: any})[animationTag]);
     }
-  }, [animationIndex]);
+    else {
+      setAnimation(animations['shooting-stars']);
+    }
+
+  }, [animationTag]);
 
   return <Lottie className='h-10' animationData={animation} loop={false} />;
 };

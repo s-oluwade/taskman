@@ -18,12 +18,12 @@ const TasksListPage = () => {
   const {data} = useSuspenseQuery(GetTasklistsDocument, {variables: {names: localNames}});
 
   useEffect(() => {
-    if (data.tasklists) {
+    if (data?.tasklists) {
       const t: any = data.tasklists;
       setTasklists(t);
     }
 
-  }, [data.tasklists]);
+  }, [data?.tasklists]);
 
   // useEffect(() => {
   //   if (data?.allTasklists) {

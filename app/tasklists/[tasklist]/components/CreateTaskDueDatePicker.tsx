@@ -26,13 +26,19 @@ export function CreateTaskDueDatePicker({onChange}: DueDatePickerProps) {
     <Popover>
       <PopoverTrigger asChild>
         <Button
+        onClick={(e)=>{
+          console.log('button clicked');
+        }}
           variant={'outline'}
           className={cn('border-gray-400 dark:border-border w-[200px] justify-start text-left font-normal', !date && 'text-muted-foreground')}>
           <CalendarIcon className='mr-2 h-4 w-4' />
           {date ? format(date, 'PPP') : <span>Whenever</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align='start' className='flex w-auto flex-col space-y-2 p-2'>
+      <PopoverContent onClick={(e)=>{
+        console.log('clicked');
+        e.stopPropagation();
+      }} align='start' className='flex w-auto flex-col space-y-2 p-2'>
         <Select
           onValueChange={(value: any) => {
             if (value === '.') {

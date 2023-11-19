@@ -17,7 +17,7 @@ export default function TasksPageLayout({children}: {children: React.ReactNode})
         <Alert className='mb-6'>
           <RocketIcon className='h-4 w-4' />
           <AlertTitle>Heads up!</AlertTitle>
-          <AlertDescription>Your tasks are currently saved on local storage and will be transferred to your account on sign in. Clearing local storage will erase your data!</AlertDescription>
+          <AlertDescription>Your tasks are currently saved locally on the browser and will be transferred to your account after sign in. Clearing local storage will erase your data!</AlertDescription>
         </Alert>
       )}
       {children}

@@ -33,7 +33,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/c
 import {ToastAction} from '@/components/ui/toast';
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from '@/components/ui/tooltip';
 import {useToast} from '@/components/ui/use-toast';
-import {DeleteTaskDocument, EditTaskDocument, GetTasksDocument} from '@/graphql/generated';
+import {DeleteTaskDocument, EditTaskDocument, GetTasksDocument, GetTasksDueDatesDocument} from '@/graphql/generated';
 import {Subtask, Task} from '@/graphql/types';
 import {addDays} from 'date-fns';
 import React, {useEffect, useState, useTransition} from 'react';
@@ -68,7 +68,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
     refetchQueries: [GetTasksDocument],
   });
   const [deleteTask, {data: deleteData, loading: deleteLoading, error: deleteError}] = useMutation(DeleteTaskDocument, {
-    refetchQueries: [GetTasksDocument],
+    refetchQueries: [GetTasksDocument, GetTasksDueDatesDocument],
   });
   const [optimizedTask, setOptimizedTask] = useState(task);
 
@@ -258,7 +258,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
                 </Badge>
                 <span className='capitalize'>{task.title}</span>
               </div>
-              {task.progress === 100 && <AnimatingIcon animationIndex={0} />}
+              {task.progress === 100 && <AnimatingIcon animationTag={task.animation} />}
             </div>
             {/* taskbar controls, shows only on small screens */}
             <div id='taskbar-control-group-1' className='flex gap-2 items-center justify-end pt-2 lg:hidden'>
@@ -295,7 +295,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
       <tr>
         <td colSpan={width}>
           <div className={`${styles.expandedRow} ${expandedRows.includes(index) ? `${styles.show}` : ''}`}>
-            <SubtaskTable onChange={speedOptimizer} subtasks={optimizedTask.subtasks} cursor={optimizedTask.cursor} />
+            <SubtaskTable animation={task.animation} onChange={speedOptimizer} subtasks={optimizedTask.subtasks} cursor={optimizedTask.cursor} />
           </div>
         </td>
       </tr>

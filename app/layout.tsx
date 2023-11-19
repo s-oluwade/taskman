@@ -17,8 +17,8 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
     <html lang='en' suppressHydrationWarning>
       <head />
       <body className={inter.className}>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-          <Header />
+        <ThemeProvider attribute='class' defaultTheme='dark' enableSystem disableTransitionOnChange>
+          {/* <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange> */}
           <main className='md:container'>{children}</main>
           <Toaster />
         </ThemeProvider>

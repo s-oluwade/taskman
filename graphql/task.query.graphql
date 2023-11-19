@@ -9,6 +9,7 @@ query GetTask($taskId: Int!) {
     dueDate
     progress
     status
+    animation
     subtasks {
       id
       index

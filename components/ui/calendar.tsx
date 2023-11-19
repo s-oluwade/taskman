@@ -20,13 +20,11 @@ function Calendar({
   ...props
 }: CalendarCustomProps) {
 
-  // const [booked, setBooked] = React.useState(false);
-  // const bookedDays = [new Date(2023, 10, 8), new Date(2023, 10, 10)];
   const bookedStyle = { border: '2px solid currentColor' };
 
-  const handleDayClick: DayClickEventHandler = (day, modifiers) => {
-    // setBooked(day && modifiers.booked);
-  };
+  // const handleDayClick: DayClickEventHandler = (day, modifiers) => {
+  //   // setBooked(day && modifiers.booked);
+  // };
 
   return (
     <DayPicker
@@ -34,7 +32,7 @@ function Calendar({
       className={cn("p-3", className)}
       modifiers={{booked: bookedDays ?? []}}
       modifiersStyles={{booked: bookedStyle}}
-      onDayClick={handleDayClick}
+      // onDayClick={handleDayClick}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",

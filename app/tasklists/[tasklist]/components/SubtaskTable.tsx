@@ -35,9 +35,10 @@ interface SubTaskTableProps {
   cursor: number;
   subtasks: Subtask[];
   onChange: (subtask: Subtask, advance: boolean) => void;
+  animation: string | null | undefined;
 }
 
-export function SubtaskTable({cursor, subtasks, onChange}: SubTaskTableProps) {
+export function SubtaskTable({cursor, subtasks, onChange, animation}: SubTaskTableProps) {
   const [audio, setAudio] = useState<HTMLAudioElement>();
   const [reorderSubtasks, {data: reorderData, loading: reorderLoading, error: reorderError}] = useMutation(
     ReorderSubtasksDocument,
@@ -90,7 +91,7 @@ export function SubtaskTable({cursor, subtasks, onChange}: SubTaskTableProps) {
                 <span className='inline-flex items-center gap-4'>
                   <span className='text-green-600'>Task Complete!</span>
                   <span>
-                    <AnimatingIcon animationIndex={0} />
+                    <AnimatingIcon animationTag={animation} />
                   </span>
                 </span>
               )}

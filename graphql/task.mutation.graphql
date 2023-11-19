@@ -1,5 +1,5 @@
-mutation CreateTask($task: AddTaskInput!) {
-  addTask(task: $task) {
+mutation CreateTask($autosubtasks: Boolean!, $task: AddTaskInput!) {
+  addTask(autosubtasks: $autosubtasks, task: $task) {
     id,
     tasklistName
     title,
@@ -9,6 +9,7 @@ mutation CreateTask($task: AddTaskInput!) {
     status,
     dueDate,
     cursor,
+    animation
     subtasks {
       id,
       index,
@@ -30,6 +31,7 @@ mutation EditTask($id: Int!, $edits: EditTaskInput!) {
     dueDate,
     progress,
     status,
+    animation
     subtasks {
       id,
       index,
@@ -51,6 +53,7 @@ mutation DeleteTask($id: Int!) {
     dueDate,
     progress,
     status,
+    animation
     subtasks {
       id,
       index,
