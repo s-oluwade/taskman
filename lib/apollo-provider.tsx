@@ -9,8 +9,9 @@ import {
 } from '@apollo/experimental-nextjs-app-support/ssr';
 
 function makeClient() {
+
   const httpLink = new HttpLink({
-    uri: process.env.NODE_ENV === 'development'? "http://localhost:4000" : process.env.NEXT_PUBLIC_GRAPHQL_API_URL,
+    uri: process.env.NODE_ENV === 'development'? "http://localhost:3000/api/graphql" : process.env.NEXT_PUBLIC_GRAPHQL_API_URL,
     // fetchOptions: {
     //   mode: 'no-cors'
     // }

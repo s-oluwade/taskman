@@ -1,11 +1,15 @@
+// import 'dotenv/config';
 import {Sequelize} from 'sequelize';
 import _Task from './models/Task';
 import _Subtask from './models/Subtask';
 import _Tasklist from './models/Tasklist';
+import mysql2 from 'mysql2';
+import OpenAI from 'openai';
 
 const sequelize = new Sequelize(process.env.MYSQLDATABASE!, process.env.MYSQLUSER!, process.env.MYSQLPASSWORD, {
   host: process.env.MYSQLHOST,
   dialect: 'mysql',
+  dialectModule: mysql2,
   dialectOptions: {
     ssl: {
       rejectUnauthorized: true,
@@ -23,23 +27,13 @@ const sequelize = new Sequelize(process.env.MYSQLDATABASE!, process.env.MYSQLUSE
   },
 });
 
-// sequelize
-//   .getQueryInterface()
-//   .showAllSchemas()
-//   .then((tableObj: any) => {
-//     console.log('// Tables in database', '==========================');
-//     console.log(tableObj);
-//   })
-//   .catch((err: any) => {
-//     console.log('showAllSchemas ERROR', err);
-//   });
-
-// try {
-//   await sequelize.authenticate();
-//   console.log('Connection to sql database through sequelize has been established.');
-// } catch (error) {
-//   console.error('Unable to connect to the database:', error);
-// }
+try {
+  sequelize.authenticate().then(() => {
+    console.log('Yay! Connection to sql database through sequelize has been established.');
+  });
+} catch (error) {
+  console.error('Unable to connect to the database:', error);
+}
 
 const Task = _Task(sequelize);
 const Subtask = _Subtask(sequelize);
@@ -90,13 +84,7 @@ export const resolvers = {
      * title, label, priority, dueDate?
      */
     async createTasklist(_: any, args: any) {
-      // if (!args.tasklist.name) {
-      //   const adjective = faker.word.adjective();
-      //   const interjection = faker.word.interjection()
-      //   const phrase = adjective + "-" + interjection;
 
-      //   args.tasklist.name = phrase;
-      // }
       const createdTasklist = await Tasklist.create({
         ...args.tasklist,
       });
@@ -125,10 +113,29 @@ export const resolvers = {
         ...args.task,
       });
 
-      await Subtask.create({
-        index: 0,
-        taskId: createdTask.id,
-      });
+      if (!args.autosubtasks) {
+        await Subtask.create({
+          index: 0,
+          taskId: createdTask.id,
+        });
+      } else {
+        const gptSubtasks = await getGPTSubtasks(args.task.title);
+        if (gptSubtasks.content) {
+          gptSubtasks.content.split('\n').forEach(async (subtask: string, index: number) => {
+            const trimmed = subtask.replace(/^\d+. \s*/, '');
+            await Subtask.create({
+              index: index,
+              taskId: createdTask.id,
+              title: trimmed,
+            });
+          });
+        } else {
+          await Subtask.create({
+            index: 0,
+            taskId: createdTask.id,
+          });
+        }
+      }
 
       return createdTask;
     },
@@ -260,3 +267,31 @@ export const resolvers = {
     },
   },
 };
+
+async function getGPTSubtasks(prompt: string) {
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-3.5-turbo',
+    messages: [
+      {
+        role: 'system',
+        content: 'Respond with only the title for each subtask.',
+      },
+      {
+        role: 'user',
+        content: `Generate subtasks for the following task: \n` + prompt,
+      },
+    ],
+    max_tokens: 100,
+    temperature: 1,
+    presence_penalty: 0,
+    frequency_penalty: 0,
+  });
+
+  const quote = completion.choices[0].message;
+
+  return quote;
+}
