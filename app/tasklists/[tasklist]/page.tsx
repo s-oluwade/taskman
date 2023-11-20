@@ -74,7 +74,7 @@ export default function TasksPage({params}: TasksPageProps) {
             <ArrowLeftIcon className='mr-2' /> Back to Tasklists
           </Link>
         </div>
-        <section className='my-10'>
+        <section>
           <div className='rounded-[0.5rem]'>
             <div className='h-full flex flex-1 flex-col space-y-8 md:p-8 md:flex px-2'>
               <div className='flex flex-col md:flex-row justify-between grow-0 items-start'>
