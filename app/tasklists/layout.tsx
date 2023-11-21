@@ -6,6 +6,7 @@ import {devtoolsExchange} from '@urql/devtools';
 import {ApolloWrapper} from '@/lib/apollo-provider';
 import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert';
 import {RocketIcon} from '@radix-ui/react-icons';
+import NextNProgress from 'nextjs-progressbar';
 
 const session = false;
 
@@ -13,6 +14,7 @@ export default function TasksPageLayout({children}: {children: React.ReactNode})
 
   return (
     <ApolloWrapper>
+      <NextNProgress/>
       {!session && (
         <Alert className='mb-6'>
           <RocketIcon className='h-4 w-4' />

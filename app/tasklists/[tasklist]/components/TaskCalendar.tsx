@@ -1,17 +1,17 @@
 'use client';
 
-import {useCallback, useEffect, useState} from 'react';
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
-import {Calendar} from '@/components/ui/calendar';
-import {Task} from '@/graphql/types';
-import {useRouter} from 'next/navigation';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Calendar } from '@/components/ui/calendar';
+import { TaskDueDate } from '@/graphql/types';
+import { useRouter } from 'next/navigation';
 import qs from 'query-string';
+import { useEffect, useState } from 'react';
 
 interface TaskCalendarProps {
-  tasks: Task[];
+  tasksDueDates: TaskDueDate[];
 }
 
-const TaskCalendar = ({tasks}: TaskCalendarProps) => {
+const TaskCalendar = ({tasksDueDates}: TaskCalendarProps) => {
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [taskDays, setTaskDays] = useState<Date[]>([]);
   const router = useRouter();
@@ -29,8 +29,8 @@ const TaskCalendar = ({tasks}: TaskCalendarProps) => {
   }, [date]);
 
   useEffect(() => {
-    setTaskDays(tasks.filter((task) => task.dueDate).map((task) => new Date(task.dueDate!)));
-  }, [tasks, router])
+    setTaskDays(tasksDueDates.filter((task) => task?.dueDate).map((task) => new Date(task?.dueDate!)));
+  }, [tasksDueDates, router])
 
   return (
     <Accordion className='w-64' type='single' collapsible>

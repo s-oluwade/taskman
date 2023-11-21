@@ -30,39 +30,28 @@ import {
   GetTasksDocument,
 } from '@/graphql/generated';
 import AddSubtaskButton from './AddSubtaskButton';
+import { useRouter } from 'next/navigation';
 
 interface SubTaskTableProps {
   cursor: number;
   subtasks: Subtask[];
-  onChange: (subtask: Subtask, advance: boolean) => void;
+  onStatusChange: (subtask: Subtask, newCursor: number) => void;
   animation: string | null | undefined;
 }
 
-export function SubtaskTable({cursor, subtasks, onChange, animation}: SubTaskTableProps) {
-  const [audio, setAudio] = useState<HTMLAudioElement>();
+export function SubtaskTable({cursor, subtasks, onStatusChange, animation}: SubTaskTableProps) {
+  const router = useRouter()
   const [reorderSubtasks, {data: reorderData, loading: reorderLoading, error: reorderError}] = useMutation(
-    ReorderSubtasksDocument,
-    {
-      refetchQueries: [GetTasksDocument],
-    }
+    ReorderSubtasksDocument
   );
   const [updateSubtask, {data: updateData, loading: updateLoading, error: updateError}] = useMutation(
-    UpdateSubtaskDocument,
-    {
-      refetchQueries: [GetTasksDocument],
-    }
+    UpdateSubtaskDocument
   );
   const [deleteSubtask, {data: deleteData, loading: deleteLoading, error: deleteError}] = useMutation(
-    DeleteSubtaskDocument,
-    {
-      refetchQueries: [GetTasksDocument],
-    }
+    DeleteSubtaskDocument
   );
   const [deleteTask, {data: deleteTaskData, loading: deleteTaskLoading, error: deleteTaskError}] = useMutation(
-    DeleteTaskDocument,
-    {
-      refetchQueries: [GetTasksDocument],
-    }
+    DeleteTaskDocument
   );
 
   const onDragEnd = async (result: any) => {
@@ -70,6 +59,7 @@ export function SubtaskTable({cursor, subtasks, onChange, animation}: SubTaskTab
 
     const subtaskId = Number(result.draggableId);
     await reorderSubtasks({variables: {subtaskId: subtaskId, newIndex: result.destination.index}});
+    router.refresh();
   };
 
   async function actionSubtaskDelete(subtaskId: number) {
@@ -78,6 +68,7 @@ export function SubtaskTable({cursor, subtasks, onChange, animation}: SubTaskTab
     if (subtasks.length <= 1) {
       await deleteTask({variables: {id: taskId}});
     }
+    router.refresh();
   }
 
   return (
@@ -131,8 +122,9 @@ export function SubtaskTable({cursor, subtasks, onChange, animation}: SubTaskTab
                           subtaskId={subtask.id}
                           status={subtask.status}
                           notReady={cursor < index}
-                          onChange={(subtaskId: any, edits: any) => {
-                            updateSubtask({variables: {subtaskId: subtaskId, edits: edits}});
+                          onChange={async (subtaskId: any, edits: any) => {
+                            await updateSubtask({variables: {subtaskId: subtaskId, edits: edits}});
+                            router.refresh();
                           }}
                         />
                       </TableCell>
@@ -140,17 +132,19 @@ export function SubtaskTable({cursor, subtasks, onChange, animation}: SubTaskTab
                         <Checkbox
                           disabled={cursor < index}
                           defaultChecked={subtask.status === 'done'}
-                          onCheckedChange={(checked: any) => {
+                          onCheckedChange={async (checked: any) => {
                             if (!checked) {
                               const copy = Object.assign({}, subtask);
                               copy.status = 'in progress';
-                              onChange(copy, false);
-                              updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'in progress'}}});
+                              onStatusChange(copy, cursor--);
+                              await updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'in progress'}}});
+                              router.refresh();
                             } else {
                               const copy = Object.assign({}, subtask);
                               copy.status = 'done';
-                              onChange(copy, true);
-                              updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'done'}}});
+                              onStatusChange(copy, cursor++);
+                              await updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'done'}}});
+                              router.refresh();
                             }
                           }}
                           className='h-8 w-8'

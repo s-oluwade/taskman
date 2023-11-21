@@ -19,29 +19,29 @@ import {
   CircleIcon,
   ClockIcon,
   CrossCircledIcon,
-  ExclamationTriangleIcon,
   QuestionMarkCircledIcon,
   StopwatchIcon,
-  TrashIcon,
+  TrashIcon
 } from '@radix-ui/react-icons';
 
 import AnimatingIcon from '@/components/AnimatingIcon';
-import {Badge} from '@/components/ui/badge';
-import {Button} from '@/components/ui/button';
-import {Progress} from '@/components/ui/progress';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select-for-priority';
-import {ToastAction} from '@/components/ui/toast';
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from '@/components/ui/tooltip';
-import {useToast} from '@/components/ui/use-toast';
-import {DeleteTaskDocument, EditTaskDocument, GetTasksDocument, GetTasksDueDatesDocument} from '@/graphql/generated';
-import {Subtask, Task} from '@/graphql/types';
-import {addDays} from 'date-fns';
-import React, {useEffect, useState, useTransition} from 'react';
-import {options} from '../data/options';
-import {TaskDueDatePicker} from './TaskDueDatePicker';
-import {SubtaskTable} from './SubtaskTable';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select-for-priority';
+import { ToastAction } from '@/components/ui/toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useToast } from '@/components/ui/use-toast';
+import { DeleteTaskDocument, EditTaskDocument } from '@/graphql/generated';
+import { Subtask, Task } from '@/graphql/types';
+import { useMutation } from '@apollo/client';
+import { addDays } from 'date-fns';
+import React, { useEffect, useState, useTransition } from 'react';
+import { options } from '../data/options';
+import { SubtaskTable } from './SubtaskTable';
+import { TaskDueDatePicker } from './TaskDueDatePicker';
 import styles from './TaskTable.module.css';
-import {useMutation} from '@apollo/client';
+import { useRouter } from 'next/navigation';
 
 interface TaskBarProps {
   task: NonNullable<Task>;
@@ -63,13 +63,10 @@ const icons = {
 const TaskBar = ({task, width, index}: TaskBarProps) => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter()
   const {toast} = useToast();
-  const [updateTask, {data: editData, loading: editLoading, error: editError}] = useMutation(EditTaskDocument, {
-    refetchQueries: [GetTasksDocument],
-  });
-  const [deleteTask, {data: deleteData, loading: deleteLoading, error: deleteError}] = useMutation(DeleteTaskDocument, {
-    refetchQueries: [GetTasksDocument, GetTasksDueDatesDocument],
-  });
+  const [updateTask, {data: editData, loading: editLoading, error: editError}] = useMutation(EditTaskDocument);
+  const [deleteTask, {data: deleteData, loading: deleteLoading, error: deleteError}] = useMutation(DeleteTaskDocument);
   const [optimizedTask, setOptimizedTask] = useState(task);
 
   useEffect(() => {
@@ -84,7 +81,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
     }
   };
 
-  function speedOptimizer(updatedSubtask: Subtask, advance: boolean) {
+  function changeStatus(updatedSubtask: Subtask, newCursor: number) {
     // filter out the old subtask and add the updated subtask to the optimizedTask
     // then add the new subtask to the optimizedTask
     const newSubtasks = task.subtasks.filter((subtask) => subtask.id !== updatedSubtask.id);
@@ -100,13 +97,12 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
     } else {
       copy.status = 'in progress';
     }
-    if (advance) {
-      copy.cursor++;
-    } else {
-      copy.cursor--;
-    }
+    copy.cursor = newCursor;
     copy.progress = newProgress;
+
+    // update the task immediately to avoid lag
     setOptimizedTask({...copy, subtasks: newSubtasks.sort((a, b) => a.index - b.index)});
+    router.refresh();
   }
 
   function TaskPriorityChanger() {
@@ -208,15 +204,16 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
             e.stopPropagation();
           }}
           className='sm:max-w-[425px]'>
-          <DialogHeader>
-            <DialogTitle>Delete Task</DialogTitle>
-            <DialogDescription>Are you sure?</DialogDescription>
+          <DialogHeader className='gap-4'>
+            <DialogTitle className='text-muted-foreground'>Deleting</DialogTitle>
+            <DialogDescription className='text-lg text-foreground'>Task -&gt; <span className='italic'>{task.title}</span></DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose>
               <Button
                 onClick={async () => {
                   await deleteTask({variables: {id}});
+                  router.refresh();
                 }}
                 type='submit'>
                 Delete
@@ -238,7 +235,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
       <tr className={styles.tableRow} title='Click to view subtasks' onClick={() => toggleRow(index)}>
         <td className={`${styles.tableCell} text-center`}>
           <div className='flex items-center'>
-            <span className='whitespace-nowrap hidden md:inline-block'>TASK-{index + 1}</span>
+            <span className='whitespace-nowrap hidden md:inline-block text-muted-foreground'>TASK-{index + 1}</span>
             <span className='md:hidden'>{index + 1}</span>
             <span className='ml-2 hidden lg:inline'>
               {task.status === 'backlog' && <icons.backlog className='mr-2 h-6 w-6 text-muted-foreground' />}
@@ -250,7 +247,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
           </div>
         </td>
         <td className={styles.tableCell}>
-          <div className='flex flex-col md:flex-row justify-between gap-2'>
+          <div className='flex flex-col md:flex-row justify-between gap-2 grow shrink'>
             <div className='flex gap-2 px-4'>
               <div>
                 <Badge className='mr-2 my-2' variant='outline'>
@@ -262,7 +259,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
             </div>
             {/* taskbar controls, shows only on small screens */}
             <div id='taskbar-control-group-1' className='flex gap-2 items-center justify-end pt-2 lg:hidden'>
-              {TaskPriorityChanger()}
+              {/* {TaskPriorityChanger()} */}
               <TaskDueDatePicker
                 onChange={(newDate) => {
                   updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});
@@ -274,12 +271,13 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
             </div>
           </div>
         </td>
-        <td className={`${styles.tableCell} text-center hidden lg:table-cell`}>{TaskPriorityChanger()}</td>
+        {/* <td className={`${styles.tableCell} text-center hidden lg:table-cell`}>{TaskPriorityChanger()}</td> */}
         {/* shows only on large screens */}
         <td className={`${styles.tableCell} text-center hidden lg:table-cell`}>
           <TaskDueDatePicker
-            onChange={(newDate) => {
-              updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});
+            onChange={async (newDate) => {
+              await updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});
+              router.refresh();
             }}
             dateString={task.dueDate ?? null}
           />
@@ -295,7 +293,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
       <tr>
         <td colSpan={width}>
           <div className={`${styles.expandedRow} ${expandedRows.includes(index) ? `${styles.show}` : ''}`}>
-            <SubtaskTable animation={task.animation} onChange={speedOptimizer} subtasks={optimizedTask.subtasks} cursor={optimizedTask.cursor} />
+            <SubtaskTable animation={task.animation} onStatusChange={changeStatus} subtasks={optimizedTask.subtasks} cursor={optimizedTask.cursor} />
           </div>
         </td>
       </tr>

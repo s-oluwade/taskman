@@ -4,7 +4,7 @@ import _Task from './models/Task';
 import _Subtask from './models/Subtask';
 import _Tasklist from './models/Tasklist';
 import mysql2 from 'mysql2';
-import OpenAI from 'openai';
+import { getAnimationGPT, getGPTSubtasks } from '../helpers';
 
 const sequelize = new Sequelize(process.env.MYSQLDATABASE!, process.env.MYSQLUSER!, process.env.MYSQLPASSWORD, {
   host: process.env.MYSQLHOST,
@@ -29,7 +29,7 @@ const sequelize = new Sequelize(process.env.MYSQLDATABASE!, process.env.MYSQLUSE
 
 try {
   sequelize.authenticate().then(() => {
-    console.log('Yay! Connection to sql database through sequelize has been established.');
+    console.log('Connection to sql database through sequelize has been established.');
   });
 } catch (error) {
   console.error('Unable to connect to the database:', error);
@@ -111,6 +111,7 @@ export const resolvers = {
     async addTask(_: any, args: any) {
       const createdTask = await Task.create({
         ...args.task,
+        animation: await getAnimationGPT(args.task.label),
       });
 
       if (!args.autosubtasks) {
@@ -267,31 +268,3 @@ export const resolvers = {
     },
   },
 };
-
-async function getGPTSubtasks(prompt: string) {
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages: [
-      {
-        role: 'system',
-        content: 'Respond with only the title for each subtask.',
-      },
-      {
-        role: 'user',
-        content: `Generate subtasks for the following task: \n` + prompt,
-      },
-    ],
-    max_tokens: 100,
-    temperature: 1,
-    presence_penalty: 0,
-    frequency_penalty: 0,
-  });
-
-  const quote = completion.choices[0].message;
-
-  return quote;
-}

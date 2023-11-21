@@ -55,11 +55,9 @@ export function TaskDueDatePicker({dateString, onChange}: TaskDueDatePicker) {
           }}
           variant={'outline'}
           className={cn(
-            `border-gray-400 dark:border-border w-[205px] md:w-auto lg:w-[205px] justify-start text-left font-normal ${isLate && 'bg-yellow-600/50'} ${isVeryLate && 'bg-red-600/75'}`,
-            !date && 'text-muted-foreground'
-          )}>
-          <CalendarIcon className='mr-2 md:mr-0 lg:mr-2 h-4 w-4' />
-          <span className='md:hidden lg:inline'>{date ? format(date, 'PPP') : <span>Whenever</span>}</span>
+            `border-gray-400 dark:border-border w-auto sm:w-[210px] md:w-auto lg:w-[210px] text-muted-foreground justify-start text-left font-normal ${isLate && 'bg-yellow-600/50'} ${isVeryLate && 'bg-red-600/75'}`)}>
+          <CalendarIcon className='mr-0 sm:mr-2 md:mr-0 lg:mr-2 h-4 w-4' />
+          <span className='hidden sm:inline md:hidden lg:inline'>{date ? format(date, 'PPP') : <span>Whenever</span>}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
