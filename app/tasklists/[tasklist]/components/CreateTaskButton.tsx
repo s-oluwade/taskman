@@ -102,7 +102,7 @@ const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
   return (
     <Sheet open={openSheet} onOpenChange={setOpenSheet}>
       <SheetTrigger asChild>
-        <Button className='whitespace-nowrap text-base' size={'lg'} variant='outline'>
+        <Button className='whitespace-nowrap text-base' variant='outline'>
           Create New Task
         </Button>
       </SheetTrigger>
@@ -208,7 +208,7 @@ const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
                 }
               </SelectGroup>
 
-              <Label htmlFor='priority' className='text-right font-light'>
+              {/* <Label htmlFor='priority' className='text-right font-light'>
                 Priority
               </Label>
               <SelectGroup id='priority'>
@@ -224,7 +224,7 @@ const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
                     ))}
                   </SelectContent>
                 </Select>
-              </SelectGroup>
+              </SelectGroup> */}
               {error && <p className='text-red-500'>An error occured while creating the task.</p>}
               {/* <div>
                 <CreateTaskDueDatePicker onChange={changeDueDate} />
@@ -243,7 +243,7 @@ const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
                     handleCreateTask(e, false);
                   }}
                   type='submit'>
-                  Create
+                  Create default
                 </Button>
               )}
               <span>or</span>

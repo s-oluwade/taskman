@@ -17,8 +17,7 @@ const TaskTable = async ({tasklistName, dateParam}: TasksProps) => {
 
   return (
     <div className='space-y-4 border border-gray-400 dark:border-border p-2 rounded min-w-fit'>
-      <div className='flex justify-between sm:flex-row-reverse items-center'>
-        <CreateTaskButton tasklistName={tasklistName} />
+      <div className='flex justify-start items-center'>
         <span className='px-4 text-muted-foreground'>Completed {completed+'/'+tasks.length}</span>
       </div>
       <table className={styles.table}>

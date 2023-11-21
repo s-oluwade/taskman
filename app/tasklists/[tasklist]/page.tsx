@@ -6,6 +6,7 @@ import Link from 'next/link';
 import TaskCalendar from './components/TaskCalendar';
 import TaskTable from './components/TaskTable';
 import Image from 'next/image';
+import CreateTaskButton from './components/CreateTaskButton';
 
 interface TasksPageProps {
   params: {tasklist: string};
@@ -30,7 +31,7 @@ export default async function TasksPage({params, searchParams: {date}}: TasksPag
 
   return (
     <div>
-      <div className='px-8'>
+      <div className='px-4'>
         <div className='flex items-center justify-center'>
           <Image width={'150'} height={'150'} className='object-cover rounded-full' src='/img/task-man.png' alt='' />
         </div>
@@ -59,16 +60,17 @@ export default async function TasksPage({params, searchParams: {date}}: TasksPag
           </span>{' '}
           !
         </p>
-        <div className='flex justify-between gap-6 py-8 items-end sm:items-start flex-col sm:flex-row'>
+        <div className='flex justify-between gap-6 py-8 items-end md:items-start flex-col md:flex-row'>
           <Link href={'/tasklists'} className={buttonVariants({variant: 'outline'})}>
             <ArrowLeftIcon className='mr-2' /> Back to Tasklists
           </Link>
+          <CreateTaskButton tasklistName={params.tasklist} />
           <TaskCalendar tasksDueDates={calendarTasks} />
         </div>
       </div>
       <section>
         <div className='rounded-[0.5rem]'>
-          <div className='h-full flex flex-1 flex-col md:p-8 px-2'>
+          <div className='h-full flex flex-1 flex-col md:p-4 px-2'>
             <p className='text-muted-foreground p-2'>
               Here are the tasks in <span className='text-green-400'>{params.tasklist}</span>.
             </p>

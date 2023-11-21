@@ -1,5 +1,3 @@
-'use client';
-
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ApolloWrapper } from '@/lib/apollo-provider';
 import { RocketIcon } from '@radix-ui/react-icons';
