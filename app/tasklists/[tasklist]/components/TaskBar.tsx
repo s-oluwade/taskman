@@ -21,27 +21,27 @@ import {
   CrossCircledIcon,
   QuestionMarkCircledIcon,
   StopwatchIcon,
-  TrashIcon
+  TrashIcon,
 } from '@radix-ui/react-icons';
 
 import AnimatingIcon from '@/components/AnimatingIcon';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select-for-priority';
-import { ToastAction } from '@/components/ui/toast';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useToast } from '@/components/ui/use-toast';
-import { DeleteTaskDocument, EditTaskDocument } from '@/graphql/generated';
-import { Subtask, Task } from '@/graphql/types';
-import { useMutation } from '@apollo/client';
-import { addDays } from 'date-fns';
-import React, { useEffect, useState, useTransition } from 'react';
-import { options } from '../data/options';
-import { SubtaskTable } from './SubtaskTable';
-import { TaskDueDatePicker } from './TaskDueDatePicker';
+import {Badge} from '@/components/ui/badge';
+import {Button} from '@/components/ui/button';
+import {Progress} from '@/components/ui/progress';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select-for-priority';
+import {ToastAction} from '@/components/ui/toast';
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from '@/components/ui/tooltip';
+import {useToast} from '@/components/ui/use-toast';
+import {DeleteTaskDocument, EditTaskDocument} from '@/graphql/generated';
+import {Subtask, Task} from '@/graphql/types';
+import {useMutation} from '@apollo/client';
+import {addDays} from 'date-fns';
+import React, {useEffect, useState, useTransition} from 'react';
+import {options} from '../data/options';
+import {SubtaskTable} from './SubtaskTable';
+import {TaskDueDatePicker} from './TaskDueDatePicker';
 import styles from './TaskTable.module.css';
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 
 interface TaskBarProps {
   task: NonNullable<Task>;
@@ -63,7 +63,7 @@ const icons = {
 const TaskBar = ({task, width, index}: TaskBarProps) => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [isPending, startTransition] = useTransition();
-  const router = useRouter()
+  const router = useRouter();
   const {toast} = useToast();
   const [updateTask, {data: editData, loading: editLoading, error: editError}] = useMutation(EditTaskDocument);
   const [deleteTask, {data: deleteData, loading: deleteLoading, error: deleteError}] = useMutation(DeleteTaskDocument);
@@ -206,7 +206,9 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
           className='sm:max-w-[425px]'>
           <DialogHeader className='gap-4'>
             <DialogTitle className='text-muted-foreground'>Deleting</DialogTitle>
-            <DialogDescription className='text-lg text-foreground'>Task -&gt; <span className='italic'>{task.title}</span></DialogDescription>
+            <DialogDescription className='text-lg text-foreground'>
+              Task -&gt; <span className='italic'>{task.title}</span>
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose>
@@ -227,19 +229,14 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
 
   return (
     <React.Fragment>
-      <tr>
-        <td colSpan={width}>
-          <Progress value={optimizedTask.progress} />
-        </td>
-      </tr>
-      <tr className={styles.tableRow} title='Click to view subtasks' onClick={() => toggleRow(index)}>
+      <tr className={`${styles.tableRow} border-t`} title='Click to view subtasks' onClick={() => toggleRow(index)}>
         <td className={`${styles.tableCell} text-center`}>
           <div className='flex items-center'>
             <span className='whitespace-nowrap hidden md:inline-block text-muted-foreground'>TASK-{index + 1}</span>
             <span className='md:hidden'>{index + 1}</span>
             <span className='ml-2 hidden lg:inline'>
-              {task.status === 'backlog' && <icons.backlog className='mr-2 h-6 w-6 text-muted-foreground' />}
-              {task.status === 'todo' && <icons.todo className='mr-2 h-6 w-6 text-muted-foreground' />}
+              {task.status === 'backlog' && <icons.backlog className='mr-2 h-5 w-5 text-muted-foreground' />}
+              {task.status === 'todo' && <icons.todo className='mr-2 h-5 w-5 text-muted-foreground' />}
               {task.status === 'in progress' && <icons.inprogress className='mr-2 h-5 w-5 text-blue-500/50' />}
               {task.status === 'done' && <icons.done className='mr-2 h-5 w-5 text-green-500/50' />}
               {task.status === 'canceled' && <icons.canceled className='mr-2 h-5 w-5 text-red-700/50' />}
@@ -290,10 +287,20 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
           </div>
         </td>
       </tr>
+      <tr className='border-b'>
+        <td colSpan={width}>
+          <Progress value={optimizedTask.progress} />
+        </td>
+      </tr>
       <tr>
         <td colSpan={width}>
           <div className={`${styles.expandedRow} ${expandedRows.includes(index) ? `${styles.show}` : ''}`}>
-            <SubtaskTable animation={task.animation} onStatusChange={changeStatus} subtasks={optimizedTask.subtasks} cursor={optimizedTask.cursor} />
+            <SubtaskTable
+              animation={task.animation}
+              onStatusChange={changeStatus}
+              subtasks={optimizedTask.subtasks}
+              cursor={optimizedTask.cursor}
+            />
           </div>
         </td>
       </tr>
