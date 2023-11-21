@@ -14,14 +14,6 @@ import {
 export const options = {
   labels: [
     {
-      value: 'art',
-      label: 'Art',
-    },
-    {
-      value: 'automotive',
-      label: 'Automotive',
-    },
-    {
       value: 'beauty',
       label: 'Beauty',
     },
@@ -30,20 +22,8 @@ export const options = {
       label: 'Business',
     },
     {
-      value: 'delivery',
-      label: 'Delivery',
-    },
-    {
       value: 'diy',
       label: 'DIY',
-    },
-    {
-      value: 'ecommerce',
-      label: 'Ecommerce',
-    },
-    {
-      value: 'editing',
-      label: 'Editing',
     },
     {
       value: 'education',
@@ -66,48 +46,12 @@ export const options = {
       label: 'Food',
     },
     {
-      value: 'gaming',
-      label: 'Gaming',
-    },
-    {
       value: 'garden',
       label: 'Garden',
     },
     {
-      value: 'health',
-      label: 'Health',
-    },
-    {
-      value: 'holidays',
-      label: 'Holidays',
-    },
-    {
-      value: 'office',
-      label: 'Office',
-    },
-    {
-      value: 'people',
-      label: 'People',
-    },
-    {
-      value: 'programming',
-      label: 'Programming',
-    },
-    {
-      value: 'religion',
-      label: 'Religion',
-    },
-    {
       value: 'shopping',
       label: 'Shopping',
-    },
-    {
-      value: 'summer',
-      label: 'Summer',
-    },
-    {
-      value: 'travel',
-      label: 'Travel',
     },
   ],
   statuses: [

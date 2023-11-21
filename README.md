@@ -1,10 +1,11 @@
 ### A Task App
 
 ## Summary
-A task app 
+A task app with AI integration
 
-Features
+## Features
+- Filter Tasks By Due Date
+- AI Automatically generated subtasks
 
-Functionality
-
+## Functionality
 

@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { AddSubtaskDocument, GetTasksDocument } from '@/graphql/generated';
+import { AddSubtaskDocument } from '@/graphql/generated';
 import { useMutation } from '@apollo/client';
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 
 interface AddSubtaskButtonProps {
   taskId: number;
@@ -15,18 +16,17 @@ interface AddSubtaskButtonProps {
 
 const AddSubtaskButton = ({taskId}: AddSubtaskButtonProps) => {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [title, setTitle] = useState('');
-  const [addSubtask, {data, loading, error}] = useMutation(AddSubtaskDocument, {
-    refetchQueries: [GetTasksDocument],
-  });
+  const [addSubtask, {data, loading, error}] = useMutation(AddSubtaskDocument);
+  const [openSheet, setOpenSheet] = useState(false);
 
-  async function onSubmit() {
+  async function onSubmit(e: any) {
+    e.preventDefault();
     if (!taskId || title === '') {
       return;
     }
 
-    addSubtask({
+    await addSubtask({
       variables: {
         input: {
           title,
@@ -34,10 +34,13 @@ const AddSubtaskButton = ({taskId}: AddSubtaskButtonProps) => {
         },
       },
     });
+    setOpenSheet(false);
+
+    router.refresh();
   }
 
   return (
-    <Sheet>
+    <Sheet open={openSheet} onOpenChange={setOpenSheet}>
       <SheetTrigger asChild>
         <Button variant={'outline'}>+</Button>
       </SheetTrigger>
@@ -60,14 +63,16 @@ const AddSubtaskButton = ({taskId}: AddSubtaskButtonProps) => {
             </div>
           </div>
           <SheetClose asChild>
-            <Button onClick={onSubmit} type='submit'>
-              {/* <PaperPlaneIcon className='h-9 w-9 text-muted-foreground' /> */}
-              Add
-            </Button>
-            {/* <Button disabled>
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
-              </Button> */}
+            {!loading ? (
+              <Button onClick={onSubmit} type='submit'>
+                Add
+              </Button>
+            ) : (
+              <Button>
+                Adding
+                <ReloadIcon className='ml-2 h-4 w-4 animate-spin' />
+              </Button>
+            )}
           </SheetClose>
         </div>
       </SheetContent>

@@ -12,19 +12,14 @@ interface TasksProps {
 
 const TaskTable = async ({tasklistName, dateParam}: TasksProps) => {
   const colSpan = 7;
-  // const client = getClient();
-  // const {data} = await client.query({query: GetTasksDocument, variables: {tasklistName}, fetchPolicy: 'no-cache'});
-  // let tasks = data.tasks;
-  // if (dateParam) {
-  //   tasks = tasks.filter((task) => task?.dueDate && task.dueDate.includes(dateParam));
-  // }
-
   const tasks = await getTasks(tasklistName, dateParam);
+  const completed = tasks.filter((task) => task?.progress === 100).length;
 
   return (
     <div className='space-y-4 border border-gray-400 dark:border-border p-2 rounded min-w-fit'>
-      <div className='flex justify-end lg:hidden'>
+      <div className='flex justify-between sm:flex-row-reverse items-center'>
         <CreateTaskButton tasklistName={tasklistName} />
+        <span className='px-4 text-muted-foreground'>Completed {completed+'/'+tasks.length}</span>
       </div>
       <table className={styles.table}>
         <thead className={styles.tableHeading}>
@@ -35,13 +30,11 @@ const TaskTable = async ({tasklistName, dateParam}: TasksProps) => {
             </th>
             <th className={`${styles.tableHead} text-left hidden lg:table-cell`}>TASKS</th>
             <th className={`${styles.tableHead} text-left hidden lg:table-cell`}>
-              <span className='pl-4'>title</span>
+              <span className='pl-8'>title</span>
             </th>
             {/* <th className={`${styles.tableHead} hidden lg:table-cell`}>priority</th> */}
-            <th className={`${styles.tableHead} hidden lg:table-cell`}>due</th>
-            <th className='hidden lg:table-cell'>
-              <CreateTaskButton tasklistName={tasklistName} />
-            </th>
+            <th className={`${styles.tableHead} hidden lg:table-cell `}><span className='lg:pl-12'>due</span></th>
+            <th className='hidden lg:table-cell'/>
           </tr>
         </thead>
         <tbody className={styles.tableBody}>

@@ -35,7 +35,7 @@ const TaskCalendar = ({tasksDueDates}: TaskCalendarProps) => {
   return (
     <Accordion className='w-64' type='single' collapsible>
       <AccordionItem className='border-b-0' value='item-1'>
-        <AccordionTrigger className='leading-6'>
+        <AccordionTrigger className='leading-6 py-2'>
           <span className='flex gap-2'>
             <svg
               xmlns='http://www.w3.org/2000/svg'

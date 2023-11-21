@@ -250,7 +250,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
           <div className='flex flex-col md:flex-row justify-between gap-2 grow shrink'>
             <div className='flex gap-2 px-4'>
               <div>
-                <Badge className='mr-2 my-2' variant='outline'>
+                <Badge className='mr-2 my-2 capitalize' variant='outline'>
                   {task.label}
                 </Badge>
                 <span className='capitalize'>{task.title}</span>
@@ -273,7 +273,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
         </td>
         {/* <td className={`${styles.tableCell} text-center hidden lg:table-cell`}>{TaskPriorityChanger()}</td> */}
         {/* shows only on large screens */}
-        <td className={`${styles.tableCell} text-center hidden lg:table-cell`}>
+        <td className={`${styles.tableCell} text-right hidden lg:table-cell`}>
           <TaskDueDatePicker
             onChange={async (newDate) => {
               await updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});

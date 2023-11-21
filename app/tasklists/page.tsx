@@ -25,13 +25,6 @@ const TasksListPage = () => {
 
   }, [data?.tasklists]);
 
-  // useEffect(() => {
-  //   if (data?.allTasklists) {
-  //     const t: any = data.allTasklists;
-  //     setTasklists(t);
-  //   }
-  // }, [data?.allTasklists])
-
   return (
     <section className='my-6 px-2'>
       <div className='flex w-full max-w-sm items-center space-x-2 mb-6'>

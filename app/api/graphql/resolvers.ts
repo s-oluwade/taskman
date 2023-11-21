@@ -4,7 +4,8 @@ import _Task from './models/Task';
 import _Subtask from './models/Subtask';
 import _Tasklist from './models/Tasklist';
 import mysql2 from 'mysql2';
-import { getAnimationGPT, getGPTSubtasks } from '../helpers';
+import { getAnimationGPT, getGPTSubtasks } from './helpers';
+import { generateLabelGPT } from '@/app/tasklists/[tasklist]/actions';
 
 const sequelize = new Sequelize(process.env.MYSQLDATABASE!, process.env.MYSQLUSER!, process.env.MYSQLPASSWORD, {
   host: process.env.MYSQLHOST,
@@ -109,9 +110,18 @@ export const resolvers = {
      * title, label, priority, dueDate?
      */
     async addTask(_: any, args: any) {
+      let label = args.task.label;
+      if (!label || label === '') {
+        const res = await generateLabelGPT(args.task.title)
+        if (res) {
+          label = res.content;
+        }
+      }
+
       const createdTask = await Task.create({
         ...args.task,
-        animation: await getAnimationGPT(args.task.label),
+        label,
+        animation: await getAnimationGPT(label),
       });
 
       if (!args.autosubtasks) {

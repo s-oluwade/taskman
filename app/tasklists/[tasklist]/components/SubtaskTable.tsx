@@ -16,7 +16,6 @@ import {Button} from '@/components/ui/button';
 import {Checkbox} from '@/components/ui/checkbox';
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {CheckIcon, TrashIcon} from '@radix-ui/react-icons';
-import {useEffect, useState} from 'react';
 import StatusComboboxPopover from './StatusComboboxPopover';
 import {Task, Subtask} from '@/graphql/types';
 import {useMutation} from '@apollo/client';
@@ -27,7 +26,6 @@ import {
   UpdateSubtaskDocument,
   DeleteSubtaskDocument,
   DeleteTaskDocument,
-  GetTasksDocument,
 } from '@/graphql/generated';
 import AddSubtaskButton from './AddSubtaskButton';
 import { useRouter } from 'next/navigation';

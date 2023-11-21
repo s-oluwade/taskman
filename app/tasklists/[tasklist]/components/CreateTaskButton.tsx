@@ -41,7 +41,7 @@ const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
   async function handleCreateTask(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, auto: boolean) {
     e.stopPropagation();
 
-    if (title === '' || label === '' || label === '.' || label === 'custom' || priority === '') {
+    if (title === '' || priority === '') {
       setCreatingTask1(false);
       setCreatingTask2(false);
       console.log('missing fields');
@@ -157,7 +157,7 @@ const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
                         {label.label}
                       </SelectItem>
                     ))}
-                    <SelectItem value='.' className='my-4 cursor-pointer hover:bg-accent'>
+                    <SelectItem value='.' className='mt-4 cursor-pointer hover:bg-accent'>
                       <span>Autogenerate </span>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
