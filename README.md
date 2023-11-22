@@ -3,7 +3,8 @@ Lazy Taskman
 
 ## Summary
 Create and manage your tasklists. Each tasklist contains tasks. And each task contains subtasks.
-On task completion, a little cool animation is displayed. The type of animation is determined by the label of the task.
+Subtasks are checked off to complete tasks.
+On task completion, a cool animation is displayed. The type of animation is determined by the label of the task.
 
 ## Features
 - AI Automatically generated subtasks.
@@ -13,6 +14,6 @@ On task completion, a little cool animation is displayed. The type of animation 
 
 ## Functionality
 - The app works with and without user sign in.
-- Under the hood, it uses AI (chatGPT) to automatically generate tasklist names, task labels, task animations, and subtasks.
+- Under the hood, it uses AI (ChatGPT) to automatically generate tasklist names, task labels, task animations, and subtasks.
 - Subtask progress are tracked and displayed on the task bar.
 - Subtasks can be viewed by clicking on the task bar.
