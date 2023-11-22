@@ -1,5 +1,6 @@
 ### A Task App
 Lazy Taskman
+https://lazy-taskman.vercel.app/
 
 ## Summary
 Create and manage your tasklists. Each tasklist contains tasks. And each task contains subtasks.
@@ -9,7 +10,9 @@ On task completion, a cool animation is displayed. The type of animation is dete
 ## Features
 - AI Automatically generated subtasks.
 - A progress bar to show the completion progress of each task.
-- The ability to filter Tasks By Due Date.
+- The ability to filter tasks by deadline.
+- Tasks that are close to due are highlighted yellow in the deadline.
+- Tasks that are very close (1 day away) to deadline are highlighted red.
 - Cool animation on task completion.
 
 ## Functionality
