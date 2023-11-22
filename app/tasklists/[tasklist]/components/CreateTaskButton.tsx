@@ -32,11 +32,13 @@ const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
   const [dueDate, setDueDate] = useState<string | null>(null);
   const [autoLabel, setAutoLabel] = useState<string | null>(null);
   const router = useRouter()
-  const [createTask, {data, loading, error}] = useMutation(CreateTaskDocument, {
-    refetchQueries: [GetTasksDocument, GetTasksDueDatesDocument],
-  });
+  const [createTask, {data, loading, error}] = useMutation(CreateTaskDocument);
   const [creatingTask1, setCreatingTask1] = useState(false);
   const [creatingTask2, setCreatingTask2] = useState(false);
+
+  if (error) {
+    console.log(error);
+  }
 
   async function handleCreateTask(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, auto: boolean) {
     e.stopPropagation();
@@ -78,6 +80,7 @@ const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
       .finally(() => {
         setTitle('');
         setLabel('');
+        setAutoLabel(null);
         setPriority('low');
         setCreatingTask1(false);
         setCreatingTask2(false);

@@ -69,7 +69,7 @@ export function AddTasklistDialogButton({onChange}: AddTasklistDialogButtonProps
             setName(phrase);
           }}
           title='Add New Tasklist'
-          className='p-8 border-2 rounded-xl h-full justify-center flex items-center hover:text-muted-foreground cursor-pointer'>
+          className='p-8 border-2 rounded-md h-full justify-center flex items-center hover:text-muted-foreground cursor-pointer'>
           <PlusCircledIcon className='h-36 w-36' />
         </div>
       </DialogTrigger>
