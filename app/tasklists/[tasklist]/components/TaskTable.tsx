@@ -1,9 +1,6 @@
-import { GetTasksDocument } from '@/graphql/generated';
-import { getClient } from '@/lib/client';
-import CreateTaskButton from './CreateTaskButton';
+import { getTasks } from '../actions';
 import TaskBar from './TaskBar';
 import styles from './TaskTable.module.css';
-import { getTasks } from '../actions';
 
 interface TasksProps {
   tasklistName: string;

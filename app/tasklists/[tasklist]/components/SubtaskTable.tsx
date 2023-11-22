@@ -40,16 +40,16 @@ interface SubTaskTableProps {
 
 export function SubtaskTable({cursor, subtasks, onStatusChange, animation, taskId}: SubTaskTableProps) {
   const router = useRouter()
-  const [reorderSubtasks, {data: reorderData, loading: reorderLoading, error: reorderError}] = useMutation(
+  const [reorderSubtasks] = useMutation(
     ReorderSubtasksDocument
   );
-  const [updateSubtask, {data: updateData, loading: updateLoading, error: updateError}] = useMutation(
+  const [updateSubtask] = useMutation(
     UpdateSubtaskDocument
   );
-  const [deleteSubtask, {data: deleteData, loading: deleteLoading, error: deleteError}] = useMutation(
+  const [deleteSubtask] = useMutation(
     DeleteSubtaskDocument
   );
-  const [deleteTask, {data: deleteTaskData, loading: deleteTaskLoading, error: deleteTaskError}] = useMutation(
+  const [deleteTask] = useMutation(
     DeleteTaskDocument
   );
 
