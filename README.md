@@ -14,6 +14,6 @@ On task completion, a cool animation is displayed. The type of animation is dete
 
 ## Functionality
 - The app works with and without user sign in.
-- Under the hood, it uses AI (chatGPT) to automatically generate tasklist names, task labels, task animations, and subtasks.
+- Under the hood, it uses AI (ChatGPT) to automatically generate tasklist names, task labels, task animations, and subtasks.
 - Subtask progress are tracked and displayed on the task bar.
 - Subtasks can be viewed by clicking on the task bar.
