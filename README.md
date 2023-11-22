@@ -3,7 +3,8 @@ Lazy Taskman
 
 ## Summary
 Create and manage your tasklists. Each tasklist contains tasks. And each task contains subtasks.
-On task completion, a little cool animation is displayed. The type of animation is determined by the label of the task.
+Subtasks are checked off to complete tasks.
+On task completion, a cool animation is displayed. The type of animation is determined by the label of the task.
 
 ## Features
 - AI Automatically generated subtasks.
