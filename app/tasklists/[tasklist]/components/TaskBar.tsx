@@ -300,6 +300,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
               onStatusChange={changeStatus}
               subtasks={optimizedTask.subtasks}
               cursor={optimizedTask.cursor}
+              taskId={task.id}
             />
           </div>
         </td>

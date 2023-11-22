@@ -35,9 +35,10 @@ interface SubTaskTableProps {
   subtasks: Subtask[];
   onStatusChange: (subtask: Subtask, newCursor: number) => void;
   animation: string | null | undefined;
+  taskId: number;
 }
 
-export function SubtaskTable({cursor, subtasks, onStatusChange, animation}: SubTaskTableProps) {
+export function SubtaskTable({cursor, subtasks, onStatusChange, animation, taskId}: SubTaskTableProps) {
   const router = useRouter()
   const [reorderSubtasks, {data: reorderData, loading: reorderLoading, error: reorderError}] = useMutation(
     ReorderSubtasksDocument
@@ -69,6 +70,8 @@ export function SubtaskTable({cursor, subtasks, onStatusChange, animation}: SubT
     router.refresh();
   }
 
+  if (!subtasks) return;
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId='table'>
@@ -76,7 +79,7 @@ export function SubtaskTable({cursor, subtasks, onStatusChange, animation}: SubT
           <Table ref={provided.innerRef} {...provided.droppableProps}>
             <TableCaption className='my-4'>
               Here are your subtasks.{' '}
-              {subtasks.length !== 0 && subtasks.filter((subtask) => subtask?.status !== 'done').length === 0 && (
+              {subtasks.length !== 0 && subtasks?.filter((subtask) => subtask?.status !== 'done').length === 0 && (
                 <span className='inline-flex items-center gap-4'>
                   <span className='text-green-600'>Task Complete!</span>
                   <span>
@@ -99,7 +102,7 @@ export function SubtaskTable({cursor, subtasks, onStatusChange, animation}: SubT
               {provided.placeholder}
             </TableHeader>
             <TableBody>
-              {subtasks.map((subtask, index) => (
+              {subtasks?.map((subtask, index) => (
                 <Draggable key={subtask.id} draggableId={subtask.id.toString()} index={subtask.index}>
                   {(provided: any, snapshot: any) => (
                     <TableRow
@@ -163,10 +166,10 @@ export function SubtaskTable({cursor, subtasks, onStatusChange, animation}: SubT
                           <DialogContent className='sm:max-w-[425px]'>
                             <DialogHeader>
                               <DialogTitle className='text-2xl'>
-                                {subtasks.length > 1 ? '🤔' : 'This is the only subtask 😯'}
+                                {subtasks?.length > 1 ? '🤔' : 'This is the only subtask 😯'}
                               </DialogTitle>
                               <DialogDescription className='pt-4 space-y-6 text-lg'>
-                                {subtasks.length === 1 && (
+                                {subtasks?.length === 1 && (
                                   <span>
                                     The <span className='text-primary underline'>Task</span> will also be deleted.
                                   </span>
@@ -196,7 +199,7 @@ export function SubtaskTable({cursor, subtasks, onStatusChange, animation}: SubT
               ))}
               <TableRow>
                 <TableCell className='text-center' colSpan={6}>
-                  <AddSubtaskButton taskId={subtasks[0].taskId} />
+                  <AddSubtaskButton taskId={taskId} />
                 </TableCell>
               </TableRow>
             </TableBody>
