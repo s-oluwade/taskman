@@ -32,7 +32,7 @@ import { useRouter } from 'next/navigation';
 
 interface SubTaskTableProps {
   cursor: number;
-  subtasks: Subtask[] | any[];
+  subtasks: any[];
   onStatusChange: (subtask: Subtask, newCursor: number) => void;
   animation: string | null | undefined;
   taskId: number;
