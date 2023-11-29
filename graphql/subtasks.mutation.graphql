@@ -7,3 +7,13 @@ mutation ReorderSubtasks($subtaskId: Int!, $newIndex: Int!) {
     taskId
   }
 }
+
+mutation CreateSubtasks($taskId: Int!, $auto: Boolean!) {
+  createSubtasks(taskId: $taskId, auto: $auto) {
+    id,
+    title,
+    status,
+    index,
+    taskId
+  }
+}

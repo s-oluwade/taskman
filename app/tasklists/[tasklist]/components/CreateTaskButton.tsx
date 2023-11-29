@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select-for-priority';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { CreateTaskDocument } from '@/graphql/generated';
+import { CreateTaskDocument, CreateSubtasksDocument } from '@/graphql/generated';
 import { useMutation } from '@apollo/client';
 import { CheckIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
@@ -22,17 +22,19 @@ import { options } from '../data/options';
 
 interface CreateTaskButtonProps {
   tasklistName: string;
+  onTaskCreated?: () => void;
 }
 
-const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
+const CreateTaskButton = ({tasklistName, onTaskCreated}: CreateTaskButtonProps) => {
   const [title, setTitle] = useState('');
   const [label, setLabel] = useState('');
   const [priority, setPriority] = useState('low');
   const [openSheet, setOpenSheet] = useState(false);
   const [dueDate, setDueDate] = useState<string | null>(null);
   const [autoLabel, setAutoLabel] = useState<string | null>(null);
-  const router = useRouter()
-  const [createTask, {data, loading, error}] = useMutation(CreateTaskDocument);
+  const router = useRouter();
+  const [createTask, {loading, error}] = useMutation(CreateTaskDocument);
+  const [createSubtask, {loading: loadingSubtasks, error: errorCreatingSubtasks}] = useMutation(CreateSubtasksDocument);
   const [creatingTask1, setCreatingTask1] = useState(false);
   const [creatingTask2, setCreatingTask2] = useState(false);
 
@@ -69,9 +71,19 @@ const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
         autosubtasks: auto,
       },
     })
-      .then(() => {
+      .then(async (task) => {
         {
+          if (!task.data?.addTask) {
+            console.log('error creating task');
+            return;
+          }
           setOpenSheet(false);
+          await createSubtask({
+            variables: {
+              taskId: task.data.addTask.id,
+              auto
+            }
+          })
         }
       })
       .catch((err) => {

@@ -4,8 +4,8 @@ import _Task from './models/Task';
 import _Subtask from './models/Subtask';
 import _Tasklist from './models/Tasklist';
 import mysql2 from 'mysql2';
-import { getAnimationGPT, getGPTSubtasks } from './helpers';
-import { generateLabelGPT } from '@/app/tasklists/[tasklist]/actions';
+import {getAnimationGPT, getGPTSubtasks} from './helpers';
+import {generateLabelGPT} from '@/app/tasklists/[tasklist]/actions';
 
 const sequelize = new Sequelize(process.env.MYSQLDATABASE!, process.env.MYSQLUSER!, process.env.MYSQLPASSWORD, {
   host: process.env.MYSQLHOST,
@@ -85,7 +85,6 @@ export const resolvers = {
      * title, label, priority, dueDate?
      */
     async createTasklist(_: any, args: any) {
-
       const createdTasklist = await Tasklist.create({
         ...args.tasklist,
       });
@@ -112,7 +111,7 @@ export const resolvers = {
     async addTask(_: any, args: any) {
       let label = args.task.label;
       if (!label || label === '') {
-        const res = await generateLabelGPT(args.task.title)
+        const res = await generateLabelGPT(args.task.title);
         if (res) {
           label = res.content;
         }
@@ -124,36 +123,43 @@ export const resolvers = {
         animation: await getAnimationGPT(label),
       });
 
-      if (!args.autosubtasks) {
-        await Subtask.create({
-          index: 0,
-          taskId: createdTask.id,
-        });
-      } else {
-        const gptSubtasks = await getGPTSubtasks(args.task.title);
-        if (gptSubtasks.content) {
-          gptSubtasks.content.split('\n').forEach(async (subtask: string, index: number) => {
-            const trimmed = subtask.replace(/^\d+. \s*/, '');
-            await Subtask.create({
-              index: index,
-              taskId: createdTask.id,
-              title: trimmed,
-            });
-          });
-        } else {
-          await Subtask.create({
-            index: 0,
-            taskId: createdTask.id,
-          });
-        }
-      }
-
       return createdTask;
     },
     async updateTask(_: any, args: any) {
       await Task.update(args.edits, {where: {id: args.id}});
 
       return await Task.findOne({where: {id: args.id}});
+    },
+
+    async createSubtasks(_: any, args: any) {
+      // check if there are already subtasks
+      let subtasks = (await Subtask.findAll()).filter((subtask) => subtask.taskId === args.taskId);
+      if (subtasks.length !== 0) {
+        return subtasks;
+      }
+
+      if (args.auto) {
+        const gptSubtasks = await getGPTSubtasks(args.task.title);
+        if (gptSubtasks.content) {
+          subtasks = [];
+          gptSubtasks.content.split('\n').forEach(async (subtask: string, index: number) => {
+            const trimmed = subtask.replace(/^\d+. \s*/, '');
+            subtasks.push(await Subtask.create({
+              index: index,
+              taskId: args.taskId,
+              title: trimmed,
+            }));
+          });
+        }
+      }
+      else {
+        subtasks.push(await Subtask.create({
+          index: 0,
+          taskId: args.taskId,
+        }));
+      }
+
+      return subtasks;
     },
 
     async deleteSubtask(_: any, args: any) {

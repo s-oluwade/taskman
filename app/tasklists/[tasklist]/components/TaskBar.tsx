@@ -84,10 +84,12 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
   function changeStatus(updatedSubtask: Subtask, newCursor: number) {
     // filter out the old subtask and add the updated subtask to the optimizedTask
     // then add the new subtask to the optimizedTask
-    const newSubtasks = task.subtasks.filter((subtask) => subtask.id !== updatedSubtask.id);
+    if(!task.subtasks) return;
+
+    const newSubtasks = task.subtasks.filter((subtask) => subtask?.id !== updatedSubtask?.id);
     newSubtasks.push(updatedSubtask);
     const newProgress = Math.ceil(
-      (newSubtasks.filter((subtask) => subtask.status === 'done').length / newSubtasks.length) * 100
+      (newSubtasks.filter((subtask) => subtask?.status === 'done').length / newSubtasks.length) * 100
     );
     const copy = Object.assign({}, task);
     if (newProgress === 100) {
@@ -101,7 +103,10 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
     copy.progress = newProgress;
 
     // update the task immediately to avoid lag
-    setOptimizedTask({...copy, subtasks: newSubtasks.sort((a, b) => a.index - b.index)});
+    setOptimizedTask({...copy, subtasks: newSubtasks.sort((a, b) => {
+      if (a === null || b === null) return 0;
+      return a.index - b.index;
+    })});
     router.refresh();
   }
 
@@ -298,7 +303,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
             <SubtaskTable
               animation={task.animation}
               onStatusChange={changeStatus}
-              subtasks={optimizedTask.subtasks}
+              subtasks={optimizedTask.subtasks ?? []}
               cursor={optimizedTask.cursor}
               taskId={task.id}
             />

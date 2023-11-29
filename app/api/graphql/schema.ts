@@ -20,7 +20,7 @@ export const typeDefs = `#graphql
     progress: Int!
     cursor: Int!
     animation: String
-    subtasks: [Subtask!]!
+    subtasks: [Subtask]
   }
   type Subtask {
     id: Int!
@@ -47,6 +47,7 @@ export const typeDefs = `#graphql
     addTask(autosubtasks: Boolean!, task: AddTaskInput!): Task
     deleteTask(id: Int!): [Task]
     updateTask(id: Int!, edits: EditTaskInput!): Task
+    createSubtasks(taskId: Int!, auto: Boolean): [Subtask]
     addSubtask(subtask: AddSubtaskInput!): Subtask
     deleteSubtask(id: Int!): [Subtask]
     updateSubtask(id: Int!, edits: EditSubtaskInput!): Subtask
