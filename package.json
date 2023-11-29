@@ -63,7 +63,6 @@
     "react-particles": "^2.12.2",
     "react-spinners": "^0.13.8",
     "react-ssr-prepass": "^1.5.0",
-    "react-tsparticles": "^2.12.2",
     "sequelize": "^6.33.0",
     "sequelize-typescript": "^2.1.5",
     "tailwind-merge": "^1.14.0",
