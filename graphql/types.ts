@@ -6,5 +6,5 @@ import type {GetTasksQuery, GetTaskQuery, GetTasklistsQuery, GetTasksDueDatesQue
 
 export type Tasklist = NonNullable<GetTasklistsQuery['tasklists'][0]>;
 export type Task = NonNullable<GetTaskQuery['task']>;
-export type Subtask = NonNullable<NonNullable<GetTasksQuery['tasks'][0]>['subtasks'][0]>;
+export type Subtask = NonNullable<NonNullable<NonNullable<GetTasksQuery['tasks'][0]>['subtasks']>[0]>;
 export type TaskDueDate = GetTasksDueDatesQuery['tasks'][0];
