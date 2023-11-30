@@ -42,7 +42,7 @@ import {SubtaskTable} from './SubtaskTable';
 import {TaskDueDatePicker} from './TaskDueDatePicker';
 import styles from './TaskTable.module.css';
 import {useRouter} from 'next/navigation';
-import { Context } from '@/components/context-provider';
+import {Context} from '@/components/context-provider';
 
 interface TaskBarProps {
   task: NonNullable<Task>;
@@ -75,19 +75,19 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
   useEffect(() => {
     if (createSubtasks && createSubtasksTaskId === task.id) {
       setCreateSubtasksTaskId(undefined);
-      (async()=>{
+      (async () => {
         await createSubtask({
           variables: {
             taskId: task.id,
-            auto: true
-          }
-        })
+            auto: true,
+          },
+        });
         setCreateSubtasks(false);
         router.refresh();
       })();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [createSubtasks])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createSubtasks]);
 
   useEffect(() => {
     setOptimizedTask(task);
@@ -104,7 +104,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
   function changeStatus(updatedSubtask: Subtask, newCursor: number) {
     // filter out the old subtask and add the updated subtask to the optimizedTask
     // then add the new subtask to the optimizedTask
-    if(!task.subtasks) return;
+    if (!task.subtasks) return;
 
     const newSubtasks = task.subtasks.filter((subtask) => subtask?.id !== updatedSubtask?.id);
     newSubtasks.push(updatedSubtask);
@@ -123,10 +123,13 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
     copy.progress = newProgress;
 
     // update the task immediately to avoid lag
-    setOptimizedTask({...copy, subtasks: newSubtasks.sort((a, b) => {
-      if (a === null || b === null) return 0;
-      return a.index - b.index;
-    })});
+    setOptimizedTask({
+      ...copy,
+      subtasks: newSubtasks.sort((a, b) => {
+        if (a === null || b === null) return 0;
+        return a.index - b.index;
+      }),
+    });
     router.refresh();
   }
 
@@ -283,6 +286,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
             <div id='taskbar-control-group-1' className='flex gap-2 items-center justify-end pt-2 lg:hidden'>
               {/* {TaskPriorityChanger()} */}
               <TaskDueDatePicker
+                taskComplete={task.progress === 100}
                 onChange={(newDate) => {
                   updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});
                 }}
@@ -297,6 +301,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
         {/* shows only on large screens */}
         <td className={`${styles.tableCell} text-right hidden lg:table-cell`}>
           <TaskDueDatePicker
+            taskComplete={task.progress === 100}
             onChange={async (newDate) => {
               await updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});
               router.refresh();

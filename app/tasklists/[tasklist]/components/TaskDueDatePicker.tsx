@@ -12,8 +12,9 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/c
 interface TaskDueDatePicker {
   dateString: string | null;
   onChange: (date: Date | undefined) => void;
+  taskComplete: boolean;
 }
-export function TaskDueDatePicker({dateString, onChange}: TaskDueDatePicker) {
+export function TaskDueDatePicker({dateString, onChange, taskComplete = false}: TaskDueDatePicker) {
   const [date, setDate] = React.useState<Date | undefined>(dateString ? new Date(dateString) : undefined);
   const [isLate, setIsLate] = React.useState(false);
   const [isVeryLate, setIsVeryLate] = React.useState(false);
@@ -55,7 +56,7 @@ export function TaskDueDatePicker({dateString, onChange}: TaskDueDatePicker) {
           }}
           variant={'outline'}
           className={cn(
-            `border-gray-400 dark:border-border w-auto sm:w-[210px] md:w-auto lg:w-[210px] text-muted-foreground justify-start text-left font-normal ${isLate && 'bg-yellow-600/50'} ${isVeryLate && 'bg-red-600/75'}`)}>
+            `border-gray-400 dark:border-border w-auto sm:w-[210px] md:w-auto lg:w-[210px] text-muted-foreground justify-start text-left font-normal ${!taskComplete && isLate && 'bg-yellow-600/50'} ${!taskComplete && isVeryLate && 'bg-red-600/75'}`)}>
           <CalendarIcon className='mr-0 sm:mr-2 md:mr-0 lg:mr-2 h-4 w-4' />
           <span className='hidden sm:inline md:hidden lg:inline'>{date ? format(date, 'PPP') : <span>Whenever</span>}</span>
         </Button>
