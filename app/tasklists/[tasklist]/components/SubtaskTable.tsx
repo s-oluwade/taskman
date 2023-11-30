@@ -22,13 +22,17 @@ import {useMutation} from '@apollo/client';
 import {DragDropContext, Droppable, Draggable} from '@hello-pangea/dnd';
 import {RowsIcon} from '@radix-ui/react-icons';
 import {
+  CreateSubtasksDocument,
   ReorderSubtasksDocument,
   UpdateSubtaskDocument,
   DeleteSubtaskDocument,
   DeleteTaskDocument,
 } from '@/graphql/generated';
 import AddSubtaskButton from './AddSubtaskButton';
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
+import ThreeDotLoader from '@/components/ThreeDotLoader';
+import React, {useEffect, useState, useTransition, useContext} from 'react';
+import { Context } from '@/components/context-provider';
 
 interface SubTaskTableProps {
   cursor: number;
@@ -39,20 +43,13 @@ interface SubTaskTableProps {
 }
 
 export function SubtaskTable({cursor, subtasks, onStatusChange, animation, taskId}: SubTaskTableProps) {
-  const router = useRouter()
-  const [reorderSubtasks] = useMutation(
-    ReorderSubtasksDocument
-  );
-  const [updateSubtask] = useMutation(
-    UpdateSubtaskDocument
-  );
-  const [deleteSubtask] = useMutation(
-    DeleteSubtaskDocument
-  );
-  const [deleteTask] = useMutation(
-    DeleteTaskDocument
-  );
-
+  const router = useRouter();
+  const [reorderSubtasks] = useMutation(ReorderSubtasksDocument);
+  const [updateSubtask] = useMutation(UpdateSubtaskDocument);
+  const [deleteSubtask] = useMutation(DeleteSubtaskDocument);
+  const [deleteTask] = useMutation(DeleteTaskDocument);
+  const {createSubtasks} = useContext(Context);
+  
   const onDragEnd = async (result: any) => {
     if (!result.destination) return;
 
@@ -102,101 +99,115 @@ export function SubtaskTable({cursor, subtasks, onStatusChange, animation, taskI
               {provided.placeholder}
             </TableHeader>
             <TableBody>
-              {subtasks?.map((subtask, index) => (
-                <Draggable key={subtask.id} draggableId={subtask.id.toString()} index={subtask.index}>
-                  {(provided: any, snapshot: any) => (
-                    <TableRow
-                      ref={provided.innerRef}
-                      key={subtask.id}
-                      className={`${cursor < index ? 'text-gray-600' : ''} ${
-                        snapshot.isDragging ? 'dark:bg-gray-900 flex justify-between items-center' : ''
-                      }`}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}>
-                      <TableCell>
-                        <RowsIcon className='h-5 w-5' />
-                      </TableCell>
-                      <TableCell className='font-medium text-center'>{subtask.index + 1}</TableCell>
-                      <TableCell>{subtask.title}</TableCell>
-                      <TableCell className='flex justify-center items-center gap-2'>
-                        <StatusComboboxPopover
-                          subtaskId={subtask.id}
-                          status={subtask.status}
-                          notReady={cursor < index}
-                          onChange={async (subtaskId: any, edits: any) => {
-                            await updateSubtask({variables: {subtaskId: subtaskId, edits: edits}});
-                            router.refresh();
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell className='text-center'>
-                        <Checkbox
-                          disabled={cursor < index}
-                          defaultChecked={subtask.status === 'done'}
-                          onCheckedChange={async (checked: any) => {
-                            if (!checked) {
-                              const copy = Object.assign({}, subtask);
-                              copy.status = 'in progress';
-                              onStatusChange(copy, cursor--);
-                              await updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'in progress'}}});
+              {subtasks && subtasks.length > 0 ? (
+                subtasks?.map((subtask, index) => (
+                  <Draggable key={subtask.id} draggableId={subtask.id.toString()} index={subtask.index}>
+                    {(provided: any, snapshot: any) => (
+                      <TableRow
+                        ref={provided.innerRef}
+                        key={subtask.id}
+                        className={`${cursor < index ? 'text-gray-600' : ''} ${
+                          snapshot.isDragging ? 'dark:bg-gray-900 flex justify-between items-center' : ''
+                        }`}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}>
+                        <TableCell>
+                          <RowsIcon className='h-5 w-5' />
+                        </TableCell>
+                        <TableCell className='font-medium text-center'>{subtask.index + 1}</TableCell>
+                        <TableCell>{subtask.title}</TableCell>
+                        <TableCell className='flex justify-center items-center gap-2'>
+                          <StatusComboboxPopover
+                            subtaskId={subtask.id}
+                            status={subtask.status}
+                            notReady={cursor < index}
+                            onChange={async (subtaskId: any, edits: any) => {
+                              await updateSubtask({variables: {subtaskId: subtaskId, edits: edits}});
                               router.refresh();
-                            } else {
-                              const copy = Object.assign({}, subtask);
-                              copy.status = 'done';
-                              onStatusChange(copy, cursor++);
-                              await updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'done'}}});
-                              router.refresh();
-                            }
-                          }}
-                          className='h-8 w-8'
-                        />
-                      </TableCell>
-                      <TableCell className='text-right'>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                              variant={'outline'}
-                              size={'icon'}>
-                              <TrashIcon className='h-4 w-4' />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className='sm:max-w-[425px]'>
-                            <DialogHeader>
-                              <DialogTitle className='text-2xl'>
-                                {subtasks?.length > 1 ? '🤔' : 'This is the only subtask 😯'}
-                              </DialogTitle>
-                              <DialogDescription className='pt-4 space-y-6 text-lg'>
-                                {subtasks?.length === 1 && (
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell className='text-center'>
+                          <Checkbox
+                            disabled={cursor < index}
+                            defaultChecked={subtask.status === 'done'}
+                            onCheckedChange={async (checked: any) => {
+                              if (!checked) {
+                                const copy = Object.assign({}, subtask);
+                                copy.status = 'in progress';
+                                onStatusChange(copy, cursor--);
+                                await updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'in progress'}}});
+                                router.refresh();
+                              } else {
+                                const copy = Object.assign({}, subtask);
+                                copy.status = 'done';
+                                onStatusChange(copy, cursor++);
+                                await updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'done'}}});
+                                router.refresh();
+                              }
+                            }}
+                            className='h-8 w-8'
+                          />
+                        </TableCell>
+                        <TableCell className='text-right'>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                }}
+                                variant={'outline'}
+                                size={'icon'}>
+                                <TrashIcon className='h-4 w-4' />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className='sm:max-w-[425px]'>
+                              <DialogHeader>
+                                <DialogTitle className='text-2xl'>
+                                  {subtasks?.length > 1 ? '🤔' : 'This is the only subtask 😯'}
+                                </DialogTitle>
+                                <DialogDescription className='pt-4 space-y-6 text-lg'>
+                                  {subtasks?.length === 1 && (
+                                    <span>
+                                      The <span className='text-primary underline'>Task</span> will also be deleted.
+                                    </span>
+                                  )}
                                   <span>
-                                    The <span className='text-primary underline'>Task</span> will also be deleted.
+                                    Remove <span className='text-primary'>`{subtask.title}`</span>?
                                   </span>
-                                )}
-                                <span>
-                                  Remove <span className='text-primary'>`{subtask.title}`</span>?
-                                </span>
-                              </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter>
-                              <DialogClose asChild>
-                                <Button
-                                  onClick={async () => {
-                                    actionSubtaskDelete(subtask.id);
-                                  }}
-                                  type='submit'>
-                                  Remove
-                                </Button>
-                              </DialogClose>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </Draggable>
-              ))}
+                                </DialogDescription>
+                              </DialogHeader>
+                              <DialogFooter>
+                                <DialogClose asChild>
+                                  <Button
+                                    onClick={async () => {
+                                      actionSubtaskDelete(subtask.id);
+                                    }}
+                                    type='submit'>
+                                    Remove
+                                  </Button>
+                                </DialogClose>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </Draggable>
+                ))
+              ) : createSubtasks ? (
+                <TableRow>
+                  <TableCell className='text-center' colSpan={6}>
+                    <ThreeDotLoader/>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <TableRow>
+                  <TableCell className='text-center' colSpan={6}>
+                    ...
+                  </TableCell>
+                </TableRow>
+              )}
               <TableRow>
                 <TableCell className='text-center' colSpan={6}>
                   <AddSubtaskButton taskId={taskId} />

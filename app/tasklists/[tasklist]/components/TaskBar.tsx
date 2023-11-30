@@ -32,16 +32,17 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/c
 import {ToastAction} from '@/components/ui/toast';
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from '@/components/ui/tooltip';
 import {useToast} from '@/components/ui/use-toast';
-import {DeleteTaskDocument, EditTaskDocument} from '@/graphql/generated';
+import {DeleteTaskDocument, EditTaskDocument, CreateSubtasksDocument} from '@/graphql/generated';
 import {Subtask, Task} from '@/graphql/types';
 import {useMutation} from '@apollo/client';
 import {addDays} from 'date-fns';
-import React, {useEffect, useState, useTransition} from 'react';
+import React, {useEffect, useState, useTransition, useContext} from 'react';
 import {options} from '../data/options';
 import {SubtaskTable} from './SubtaskTable';
 import {TaskDueDatePicker} from './TaskDueDatePicker';
 import styles from './TaskTable.module.css';
 import {useRouter} from 'next/navigation';
+import { Context } from '@/components/context-provider';
 
 interface TaskBarProps {
   task: NonNullable<Task>;
@@ -68,6 +69,25 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
   const [updateTask, {data: editData, loading: editLoading, error: editError}] = useMutation(EditTaskDocument);
   const [deleteTask, {data: deleteData, loading: deleteLoading, error: deleteError}] = useMutation(DeleteTaskDocument);
   const [optimizedTask, setOptimizedTask] = useState(task);
+  const {createSubtasks, setCreateSubtasks, createSubtasksTaskId, setCreateSubtasksTaskId} = useContext(Context);
+  const [createSubtask, {loading: loadingSubtasks, error: errorCreatingSubtasks}] = useMutation(CreateSubtasksDocument);
+
+  useEffect(() => {
+    if (createSubtasks && createSubtasksTaskId === task.id) {
+      setCreateSubtasksTaskId(undefined);
+      (async()=>{
+        await createSubtask({
+          variables: {
+            taskId: task.id,
+            auto: true
+          }
+        })
+        setCreateSubtasks(false);
+        router.refresh();
+      })();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createSubtasks])
 
   useEffect(() => {
     setOptimizedTask(task);

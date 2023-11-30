@@ -36,10 +36,10 @@ export default async function TasksPage({params, searchParams: {date}}: TasksPag
           <Image width={'150'} height={'150'} className='object-cover rounded-full' src='/img/task-man.png' alt='' />
         </div>
         <p className='text-center'>
-          Lazy <span className='text-green-400'>Taskman</span>
+          <span className='text-green-400'>Taskman</span>
         </p>
         <p className='text-center mb-6'>
-          Complete your darn{' '}
+          Complete the damn{' '}
           <span className='text-green-400'>
             <svg
               xmlns='http://www.w3.org/2000/svg'

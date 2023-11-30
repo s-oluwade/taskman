@@ -138,25 +138,38 @@ export const resolvers = {
         return subtasks;
       }
 
+      console.log('\ncreate subtasks endpoint hit\n');
+
       if (args.auto) {
-        const gptSubtasks = await getGPTSubtasks(args.task.title);
+        const task = await Task.findOne({where: {id: args.taskId}});
+        if (!task) {
+          return [];
+        }
+        const gptSubtasks = await getGPTSubtasks(task?.title);
+
+        console.log('gpt subtasks: ' + gptSubtasks.content);
         if (gptSubtasks.content) {
           subtasks = [];
           gptSubtasks.content.split('\n').forEach(async (subtask: string, index: number) => {
             const trimmed = subtask.replace(/^\d+. \s*/, '');
-            subtasks.push(await Subtask.create({
-              index: index,
-              taskId: args.taskId,
-              title: trimmed,
-            }));
+            subtasks.push(
+              await Subtask.create({
+                index: index,
+                taskId: args.taskId,
+                title: trimmed,
+              })
+            );
           });
+
+          console.log(gptSubtasks);
         }
-      }
-      else {
-        subtasks.push(await Subtask.create({
-          index: 0,
-          taskId: args.taskId,
-        }));
+      } else {
+        subtasks.push(
+          await Subtask.create({
+            index: 0,
+            taskId: args.taskId,
+          })
+        );
       }
 
       return subtasks;
@@ -166,7 +179,7 @@ export const resolvers = {
       const subtask = await Subtask.findOne({where: {id: args.id}});
       const taskId = subtask?.taskId;
       subtask?.destroy();
-      const subtasks = (await Subtask.findAll()).filter((subtask) => subtask.taskId === taskId);
+      let subtasks = (await Subtask.findAll()).filter((subtask) => subtask.taskId === taskId);
 
       // sorts the subtasks by index first, then reindexes them
       subtasks
@@ -178,7 +191,7 @@ export const resolvers = {
           return subtask;
         });
 
-      return (await Subtask.findAll()).filter((subtask) => subtask.taskId === taskId);
+      return subtasks;
     },
     /*
      * args.subtask includes:

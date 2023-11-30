@@ -16,16 +16,16 @@ import { CreateTaskDocument, CreateSubtasksDocument } from '@/graphql/generated'
 import { useMutation } from '@apollo/client';
 import { CheckIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { generateLabelGPT } from '../actions';
 import { options } from '../data/options';
+import { Context } from '@/components/context-provider';
 
 interface CreateTaskButtonProps {
   tasklistName: string;
-  onTaskCreated?: () => void;
 }
 
-const CreateTaskButton = ({tasklistName, onTaskCreated}: CreateTaskButtonProps) => {
+const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
   const [title, setTitle] = useState('');
   const [label, setLabel] = useState('');
   const [priority, setPriority] = useState('low');
@@ -34,9 +34,10 @@ const CreateTaskButton = ({tasklistName, onTaskCreated}: CreateTaskButtonProps) 
   const [autoLabel, setAutoLabel] = useState<string | null>(null);
   const router = useRouter();
   const [createTask, {loading, error}] = useMutation(CreateTaskDocument);
-  const [createSubtask, {loading: loadingSubtasks, error: errorCreatingSubtasks}] = useMutation(CreateSubtasksDocument);
   const [creatingTask1, setCreatingTask1] = useState(false);
   const [creatingTask2, setCreatingTask2] = useState(false);
+  const {createSubtasks, setCreateSubtasks, setCreateSubtasksTaskId} = useContext(Context);
+  const [createSubtask, {loading: loadingSubtasks, error: errorCreatingSubtasks}] = useMutation(CreateSubtasksDocument);
 
   if (error) {
     console.log(error);
@@ -78,12 +79,18 @@ const CreateTaskButton = ({tasklistName, onTaskCreated}: CreateTaskButtonProps) 
             return;
           }
           setOpenSheet(false);
-          await createSubtask({
-            variables: {
-              taskId: task.data.addTask.id,
-              auto
-            }
-          })
+          if (!auto) {
+            await createSubtask({
+              variables: {
+                taskId: task.data.addTask.id,
+                auto: false
+              }
+            })
+          }
+          else {
+            setCreateSubtasks(true);
+            setCreateSubtasksTaskId(task.data.addTask.id);
+          }
         }
       })
       .catch((err) => {
