@@ -138,8 +138,6 @@ export const resolvers = {
         return subtasks;
       }
 
-      console.log('\ncreate subtasks endpoint hit\n');
-
       if (args.auto) {
         const task = await Task.findOne({where: {id: args.taskId}});
         if (!task) {
@@ -147,7 +145,6 @@ export const resolvers = {
         }
         const gptSubtasks = await getGPTSubtasks(task?.title);
 
-        console.log('gpt subtasks: ' + gptSubtasks.content);
         if (gptSubtasks.content) {
           subtasks = [];
           gptSubtasks.content.split('\n').forEach(async (subtask: string, index: number) => {
@@ -161,7 +158,6 @@ export const resolvers = {
             );
           });
 
-          console.log(gptSubtasks);
         }
       } else {
         subtasks.push(

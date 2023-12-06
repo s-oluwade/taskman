@@ -12,7 +12,6 @@ export const metadata: Metadata = {
   title: 'Taskman',
   description: 'ChaChing! Task Complete',
 };
-
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang='en' suppressHydrationWarning>

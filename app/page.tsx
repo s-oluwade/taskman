@@ -1,9 +1,18 @@
 import {Button} from '@/components/ui/button';
 import {Separator} from '@/components/ui/separator';
+import {getServerSession} from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
+import {options} from './api/auth/[...nextauth]/options';
+import {redirect} from 'next/navigation';
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(options);
+
+  if (!session) {
+    redirect('/api/auth/signin?callbackUrl=/');
+  }
+
   return (
     <main className='flex min-h-screen -mt-12 flex-col items-center justify-center p-24'>
       <ul className='items-center justify-between text-sm rounded border border-gray-200 dark:border-gray-600 p-6 space-y-2'>
