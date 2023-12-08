@@ -19,41 +19,40 @@ const TasksListPage = () => {
   const {session, setSession} = useContext(Context);
   const {data: sessionData} = useSession();
   const [taskLists, setTasklists] = useState<Tasklist[]>([]);
-  // const [updateTasklist, {data: data1, loading, error}] = useMutation(UpdateTasklistDocument);
+  const [updateTasklist, {data: data1, loading, error}] = useMutation(UpdateTasklistDocument);
   const localTaskListNames =
   typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('localTaskListNames') ?? '[]') : [];
   const [localNames, setLocalNames] = useState<string[]>(localTaskListNames);
-  // const {data} = useSuspenseQuery(GetTasklistsDocument, {variables: {names: localNames, userId: sessionData?.user?.email}});
+  const {data} = useSuspenseQuery(GetTasklistsDocument, {variables: {names: localNames, userId: sessionData?.user?.email}});
 
   const currentUserId = sessionData?.user?.email;
   if (currentUserId && localTaskListNames.length > 0) {
     localTaskListNames.forEach(async (tasklistName: string) => {
       // const tasklist = session.user.tasklists.find((tasklist) => tasklist.name === tasklistName);
-      
-      // await updateTasklist({
-      //   variables: {
-      //     tasklistName,
-      //     edits: {
-      //       userId: currentUserId,
-      //     },
-      //   },
-      // });
+      await updateTasklist({
+        variables: {
+          tasklistName,
+          edits: {
+            userId: currentUserId,
+          },
+        },
+      });
     });
     localStorage.removeItem('localTaskListNames');
   }
 
-  // useEffect(() => {
-  //   if (data?.tasklists) {
-  //     const t: any = data.tasklists;
-  //     setTasklists(t);
-  //   }
-  // }, [data?.tasklists]);
+  useEffect(() => {
+    if (data?.tasklists) {
+      const t: any = data.tasklists;
+      setTasklists(t);
+    }
+  }, [data?.tasklists]);
 
-  // useEffect(() => {
-  //   if (sessionData && JSON.stringify(session) !== JSON.stringify(sessionData)) {
-  //     setSession(sessionData);
-  //   }
-  // }, [sessionData])
+  useEffect(() => {
+    if (sessionData && JSON.stringify(session) !== JSON.stringify(sessionData)) {
+      setSession(sessionData);
+    }
+  }, [sessionData])
 
   return (
     <section className='my-6 px-2'>

@@ -14,10 +14,10 @@ export default function TasksPageLayout({children}: {children: React.ReactNode})
   
   return (
     <SessionProvider session={session}>
-      {/* <ApolloWrapper> */}
+      <ApolloWrapper>
         <Header />
         {children}
-      {/* </ApolloWrapper> */}
+      </ApolloWrapper>
     </SessionProvider>
   );
 }

@@ -21,7 +21,7 @@ interface DeleteTaskListDialogButtonProps {
 
 const DeleteTaskListDialogButton = ({tasklistId}: DeleteTaskListDialogButtonProps) => {
   // const [result, deleteTasklist] = useMutation(DeleteTasklistDocument);
-  // const [deleteTasklist, {data, loading, error}] = useMutation(DeleteTasklistDocument, {refetchQueries: [GetTasklistsDocument]});
+  const [deleteTasklist, {data, loading, error}] = useMutation(DeleteTasklistDocument, {refetchQueries: [GetTasklistsDocument]});
 
   return (
     <AlertDialog>
@@ -51,7 +51,7 @@ const DeleteTaskListDialogButton = ({tasklistId}: DeleteTaskListDialogButtonProp
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          {/* <AlertDialogAction onClick={() => deleteTasklist({variables: {tasklistId}})}>Continue</AlertDialogAction> */}
+          <AlertDialogAction onClick={() => deleteTasklist({variables: {tasklistId}})}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

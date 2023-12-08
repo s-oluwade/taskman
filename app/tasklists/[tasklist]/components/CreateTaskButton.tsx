@@ -33,16 +33,15 @@ const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
   const [dueDate, setDueDate] = useState<string | null>(null);
   const [autoLabel, setAutoLabel] = useState<string | null>(null);
   const router = useRouter();
-  // const [createTask, {loading, error}] = useMutation(CreateTaskDocument);
+  const [createTask, {loading, error}] = useMutation(CreateTaskDocument);
   const [creatingTask1, setCreatingTask1] = useState(false);
   const [creatingTask2, setCreatingTask2] = useState(false);
   const {createSubtasks, setCreateSubtasks, setCreateSubtasksTaskId} = useContext(Context);
-  // const [createSubtask, {loading: loadingSubtasks, error: errorCreatingSubtasks}] = useMutation(CreateSubtasksDocument);
-  const loading = false
-  const error = false
-  // if (error) {
-  //   console.log(error);
-  // }
+  const [createSubtask, {loading: loadingSubtasks, error: errorCreatingSubtasks}] = useMutation(CreateSubtasksDocument);
+
+  if (error) {
+    console.log(error);
+  }
 
   async function handleCreateTask(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, auto: boolean) {
     e.stopPropagation();
@@ -61,51 +60,51 @@ const CreateTaskButton = ({tasklistName}: CreateTaskButtonProps) => {
       setCreatingTask2(true);
     }
 
-    // createTask({
-    //   variables: {
-    //     task: {
-    //       tasklistName,
-    //       title,
-    //       label,
-    //       priority,
-    //       dueDate,
-    //     },
-    //     autosubtasks: auto,
-    //   },
-    // })
-    //   .then(async (task) => {
-    //     {
-    //       if (!task.data?.addTask) {
-    //         console.log('error creating task');
-    //         return;
-    //       }
-    //       setOpenSheet(false);
-    //       if (!auto) {
-    //         await createSubtask({
-    //           variables: {
-    //             taskId: task.data.addTask.id,
-    //             auto: false
-    //           }
-    //         })
-    //       }
-    //       else {
-    //         setCreateSubtasks(true);
-    //         setCreateSubtasksTaskId(task.data.addTask.id);
-    //       }
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   })
-    //   .finally(() => {
-    //     setTitle('');
-    //     setLabel('');
-    //     setAutoLabel(null);
-    //     setPriority('low');
-    //     setCreatingTask1(false);
-    //     setCreatingTask2(false);
-    //     router.refresh();
-    //   });
+    createTask({
+      variables: {
+        task: {
+          tasklistName,
+          title,
+          label,
+          priority,
+          dueDate,
+        },
+        autosubtasks: auto,
+      },
+    })
+      .then(async (task) => {
+        {
+          if (!task.data?.addTask) {
+            console.log('error creating task');
+            return;
+          }
+          setOpenSheet(false);
+          if (!auto) {
+            await createSubtask({
+              variables: {
+                taskId: task.data.addTask.id,
+                auto: false
+              }
+            })
+          }
+          else {
+            setCreateSubtasks(true);
+            setCreateSubtasksTaskId(task.data.addTask.id);
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setTitle('');
+        setLabel('');
+        setAutoLabel(null);
+        setPriority('low');
+        setCreatingTask1(false);
+        setCreatingTask2(false);
+        router.refresh();
+      });
   }
 
   useEffect(() => {
