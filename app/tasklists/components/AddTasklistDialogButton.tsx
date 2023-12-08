@@ -14,10 +14,8 @@ import {PlusCircledIcon} from '@radix-ui/react-icons';
 import {faker} from '@faker-js/faker';
 import {useContext, useState} from 'react';
 import {CreateTasklistDocument, GetTasklistsDocument} from '@/graphql/generated';
-import {GetAllTasklistsDocument} from '@/graphql/generated';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
-// import {useMutation, useQuery} from '@urql/next';
 import {useMutation} from '@apollo/client';
 import { Context } from '@/components/context-provider';
 
@@ -29,8 +27,6 @@ export function AddTasklistDialogButton({onChange}: AddTasklistDialogButtonProps
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isError, setIsError] = useState(false);
-  // just a dummy placeholder
-  const [user, setUser] = useState<{userId: number} | null>(null);
   const [createTasklist, {data, loading, error}] = useMutation(CreateTasklistDocument, {
     refetchQueries: [GetTasklistsDocument],
   });

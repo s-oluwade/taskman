@@ -12,7 +12,6 @@ import {
 import {Button} from '@/components/ui/button';
 import {DeleteTasklistDocument} from '@/graphql/generated';
 import {GetAllTasklistsDocument, GetTasklistsDocument} from '@/graphql/generated';
-// import {useMutation} from '@urql/next';
 import {useMutation} from '@apollo/client';
 
 interface DeleteTaskListDialogButtonProps {
@@ -20,7 +19,6 @@ interface DeleteTaskListDialogButtonProps {
 }
 
 const DeleteTaskListDialogButton = ({tasklistId}: DeleteTaskListDialogButtonProps) => {
-  // const [result, deleteTasklist] = useMutation(DeleteTasklistDocument);
   const [deleteTasklist, {data, loading, error}] = useMutation(DeleteTasklistDocument, {refetchQueries: [GetTasklistsDocument]});
 
   return (
