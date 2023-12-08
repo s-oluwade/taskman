@@ -66,22 +66,22 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const {toast} = useToast();
-  const [updateTask, {data: editData, loading: editLoading, error: editError}] = useMutation(EditTaskDocument);
-  const [deleteTask, {data: deleteData, loading: deleteLoading, error: deleteError}] = useMutation(DeleteTaskDocument);
+  // const [updateTask, {data: editData, loading: editLoading, error: editError}] = useMutation(EditTaskDocument);
+  // const [deleteTask, {data: deleteData, loading: deleteLoading, error: deleteError}] = useMutation(DeleteTaskDocument);
   const [optimizedTask, setOptimizedTask] = useState(task);
   const {createSubtasks, setCreateSubtasks, createSubtasksTaskId, setCreateSubtasksTaskId} = useContext(Context);
-  const [createSubtask, {loading: loadingSubtasks, error: errorCreatingSubtasks}] = useMutation(CreateSubtasksDocument);
+  // const [createSubtask, {loading: loadingSubtasks, error: errorCreatingSubtasks}] = useMutation(CreateSubtasksDocument);
 
   useEffect(() => {
     if (createSubtasks && createSubtasksTaskId === task.id) {
       setCreateSubtasksTaskId(undefined);
       (async () => {
-        await createSubtask({
-          variables: {
-            taskId: task.id,
-            auto: true,
-          },
-        });
+        // await createSubtask({
+        //   variables: {
+        //     taskId: task.id,
+        //     auto: true,
+        //   },
+        // });
         setCreateSubtasks(false);
         router.refresh();
       })();
@@ -138,7 +138,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
       <div className='flex items-center justify-center'>
         <Select
           onValueChange={(newVal: any) => {
-            updateTask({variables: {id: task.id, edits: {priority: newVal}}});
+            // updateTask({variables: {id: task.id, edits: {priority: newVal}}});
           }}
           value={task.priority}>
           <SelectTrigger className='lg:w-[130px]'>
@@ -177,12 +177,12 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
                       <ToastAction
                         onClick={() => {
                           clearTimeout(timeout);
-                          updateTask({
-                            variables: {
-                              id: task.id,
-                              edits: {dueDate: addDays(new Date(task.dueDate!), 0).toLocaleString()},
-                            },
-                          });
+                          // updateTask({
+                          //   variables: {
+                          //     id: task.id,
+                          //     edits: {dueDate: addDays(new Date(task.dueDate!), 0).toLocaleString()},
+                          //   },
+                          // });
                           dismiss();
                         }}
                         altText='Goto schedule to undo'>
@@ -190,12 +190,12 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
                       </ToastAction>
                     ),
                   });
-                  updateTask({
-                    variables: {
-                      id: task.id,
-                      edits: {dueDate: addDays(new Date(task.dueDate!), 1).toLocaleString()},
-                    },
-                  });
+                  // updateTask({
+                  //   variables: {
+                  //     id: task.id,
+                  //     edits: {dueDate: addDays(new Date(task.dueDate!), 1).toLocaleString()},
+                  //   },
+                  // });
                   const timeout = setTimeout(() => {
                     dismiss();
                   }, 5000);
@@ -242,7 +242,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
             <DialogClose>
               <Button
                 onClick={async () => {
-                  await deleteTask({variables: {id}});
+                  // await deleteTask({variables: {id}});
                   router.refresh();
                 }}
                 type='submit'>
@@ -288,7 +288,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
               <TaskDueDatePicker
                 taskComplete={task.progress === 100}
                 onChange={(newDate) => {
-                  updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});
+                  // updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});
                 }}
                 dateString={task.dueDate ?? null}
               />
@@ -303,7 +303,7 @@ const TaskBar = ({task, width, index}: TaskBarProps) => {
           <TaskDueDatePicker
             taskComplete={task.progress === 100}
             onChange={async (newDate) => {
-              await updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});
+              // await updateTask({variables: {id: task.id, edits: {dueDate: newDate?.toLocaleDateString() ?? null}}});
               router.refresh();
             }}
             dateString={task.dueDate ?? null}

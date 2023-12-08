@@ -31,9 +31,9 @@ export function AddTasklistDialogButton({onChange}: AddTasklistDialogButtonProps
   const [isError, setIsError] = useState(false);
   // just a dummy placeholder
   const [user, setUser] = useState<{userId: number} | null>(null);
-  const [createTasklist, {data, loading, error}] = useMutation(CreateTasklistDocument, {
-    refetchQueries: [GetTasklistsDocument],
-  });
+  // const [createTasklist, {data, loading, error}] = useMutation(CreateTasklistDocument, {
+  //   refetchQueries: [GetTasklistsDocument],
+  // });
   const {session} = useContext(Context);
 
   function onSubmit(e: React.FormEvent<HTMLButtonElement>) {
@@ -50,7 +50,7 @@ export function AddTasklistDialogButton({onChange}: AddTasklistDialogButtonProps
     localStorage.setItem('localTaskListNames', JSON.stringify(localTaskListNames));
     onChange(localTaskListNames);
 
-    createTasklist({variables: {tasklist: {name, description, userId: session?.user?.email}}});
+    // createTasklist({variables: {tasklist: {name, description, userId: session?.user?.email}}});
   }
 
   return (

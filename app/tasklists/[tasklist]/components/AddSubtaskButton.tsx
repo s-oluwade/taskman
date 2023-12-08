@@ -17,7 +17,7 @@ interface AddSubtaskButtonProps {
 const AddSubtaskButton = ({taskId}: AddSubtaskButtonProps) => {
   const router = useRouter();
   const [title, setTitle] = useState('');
-  const [addSubtask, {data, loading, error}] = useMutation(AddSubtaskDocument);
+  // const [addSubtask, {data, loading, error}] = useMutation(AddSubtaskDocument);
   const [openSheet, setOpenSheet] = useState(false);
 
   async function onSubmit(e: any) {
@@ -26,14 +26,14 @@ const AddSubtaskButton = ({taskId}: AddSubtaskButtonProps) => {
       return;
     }
 
-    await addSubtask({
-      variables: {
-        input: {
-          title,
-          taskId,
-        },
-      },
-    });
+    // await addSubtask({
+    //   variables: {
+    //     input: {
+    //       title,
+    //       taskId,
+    //     },
+    //   },
+    // });
     setOpenSheet(false);
 
     router.refresh();
@@ -63,7 +63,7 @@ const AddSubtaskButton = ({taskId}: AddSubtaskButtonProps) => {
             </div>
           </div>
           <SheetClose asChild>
-            {!loading ? (
+            {/* {!loading ? (
               <Button onClick={onSubmit} type='submit'>
                 Add
               </Button>
@@ -72,7 +72,7 @@ const AddSubtaskButton = ({taskId}: AddSubtaskButtonProps) => {
                 Adding
                 <ReloadIcon className='ml-2 h-4 w-4 animate-spin' />
               </Button>
-            )}
+            )} */}
           </SheetClose>
         </div>
       </SheetContent>

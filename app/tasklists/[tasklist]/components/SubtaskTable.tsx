@@ -44,26 +44,26 @@ interface SubTaskTableProps {
 
 export function SubtaskTable({cursor, subtasks, onStatusChange, animation, taskId}: SubTaskTableProps) {
   const router = useRouter();
-  const [reorderSubtasks] = useMutation(ReorderSubtasksDocument);
-  const [updateSubtask] = useMutation(UpdateSubtaskDocument);
-  const [deleteSubtask] = useMutation(DeleteSubtaskDocument);
-  const [deleteTask] = useMutation(DeleteTaskDocument);
+  // const [reorderSubtasks] = useMutation(ReorderSubtasksDocument);
+  // const [updateSubtask] = useMutation(UpdateSubtaskDocument);
+  // const [deleteSubtask] = useMutation(DeleteSubtaskDocument);
+  // const [deleteTask] = useMutation(DeleteTaskDocument);
   const {createSubtasks} = useContext(Context);
   
   const onDragEnd = async (result: any) => {
     if (!result.destination) return;
 
     const subtaskId = Number(result.draggableId);
-    await reorderSubtasks({variables: {subtaskId: subtaskId, newIndex: result.destination.index}});
+    // await reorderSubtasks({variables: {subtaskId: subtaskId, newIndex: result.destination.index}});
     router.refresh();
   };
 
   async function actionSubtaskDelete(subtaskId: number) {
     const taskId = subtasks[0].taskId;
-    await deleteSubtask({variables: {subtaskId: subtaskId}});
-    if (subtasks.length <= 1) {
-      await deleteTask({variables: {id: taskId}});
-    }
+    // await deleteSubtask({variables: {subtaskId: subtaskId}});
+    // if (subtasks.length <= 1) {
+    //   await deleteTask({variables: {id: taskId}});
+    // }
     router.refresh();
   }
 
@@ -122,7 +122,7 @@ export function SubtaskTable({cursor, subtasks, onStatusChange, animation, taskI
                             status={subtask.status}
                             notReady={cursor < index}
                             onChange={async (subtaskId: any, edits: any) => {
-                              await updateSubtask({variables: {subtaskId: subtaskId, edits: edits}});
+                              // await updateSubtask({variables: {subtaskId: subtaskId, edits: edits}});
                               router.refresh();
                             }}
                           />
@@ -136,13 +136,13 @@ export function SubtaskTable({cursor, subtasks, onStatusChange, animation, taskI
                                 const copy = Object.assign({}, subtask);
                                 copy.status = 'in progress';
                                 onStatusChange(copy, cursor--);
-                                await updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'in progress'}}});
+                                // await updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'in progress'}}});
                                 router.refresh();
                               } else {
                                 const copy = Object.assign({}, subtask);
                                 copy.status = 'done';
                                 onStatusChange(copy, cursor++);
-                                await updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'done'}}});
+                                // await updateSubtask({variables: {subtaskId: copy.id, edits: {status: 'done'}}});
                                 router.refresh();
                               }
                             }}
