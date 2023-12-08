@@ -1,21 +1,23 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { ApolloWrapper } from '@/lib/apollo-provider';
-import { RocketIcon } from '@radix-ui/react-icons';
+'use client';
 
-const session = false;
+import Header from '@/components/Header';
+import { Context } from '@/components/context-provider';
+import { UpdateTasklistDocument } from '@/graphql/generated';
+import { ApolloWrapper } from '@/lib/apollo-provider';
+import { useMutation } from '@apollo/client';
+import { SessionProvider } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useContext } from 'react';
 
 export default function TasksPageLayout({children}: {children: React.ReactNode}) {
-
+  const {session} = useContext(Context);
+  
   return (
-    <ApolloWrapper>
-      {!session && (
-        <Alert className='mb-6 mt-2'>
-          <RocketIcon className='h-4 w-4' />
-          <AlertTitle>Heads up!</AlertTitle>
-          <AlertDescription>Your tasks are currently saved locally on the browser and will be transferred to your account after sign in. Clearing local storage will erase your data!</AlertDescription>
-        </Alert>
-      )}
-      {children}
-    </ApolloWrapper>
+    <SessionProvider session={session}>
+      <ApolloWrapper>
+        <Header />
+        {children}
+      </ApolloWrapper>
+    </SessionProvider>
   );
 }

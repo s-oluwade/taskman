@@ -32,7 +32,7 @@ export const typeDefs = `#graphql
   }
   type Query {
     allTasklists: [Tasklist]!
-    tasklists(names: [String]!): [Tasklist]!
+    tasklists(names: [String], userId: String): [Tasklist]!
     tasklist(name: String!): Tasklist
     allTasks: [Task]!
     tasks(tasklistName: String!): [Task]!
@@ -43,7 +43,7 @@ export const typeDefs = `#graphql
   type Mutation {
     createTasklist(tasklist: AddTasklistInput!): Tasklist
     deleteTasklist(id: Int!): [Tasklist]
-    updateTasklist(id: Int!, edits: EditTasklistInput!): Tasklist
+    updateTasklist(name: String!, edits: EditTasklistInput!): Tasklist
     addTask(autosubtasks: Boolean!, task: AddTaskInput!): Task
     deleteTask(id: Int!): [Task]
     updateTask(id: Int!, edits: EditTaskInput!): Task
@@ -54,11 +54,12 @@ export const typeDefs = `#graphql
     reorderSubtasks(subtaskId: Int!, newIndex: Int! ): [Subtask]
   }
   input AddTasklistInput {
-    userId: Int
+    userId: String
     name: String!
     description: String
   }
   input EditTasklistInput {
+    userId: String
     name: String
     description: String
   }

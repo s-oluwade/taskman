@@ -52,7 +52,12 @@ export const resolvers = {
     tasklist: async (obj: any, args: any, context: any, info: any) =>
       await Tasklist.findOne({where: {name: args.name}}),
     tasklists: async (obj: any, args: any, context: any, info: any) => {
-      return (await Tasklist.findAll()).filter((tasklist) => args.names.includes(tasklist.name));
+      if (args.userId) {
+        return (await Tasklist.findAll()).filter((tasklist) => tasklist.userId.toLowerCase() === args.userId);
+      }
+      else if (args.names) {
+        return (await Tasklist.findAll()).filter((tasklist) => args.names.includes(tasklist.name));
+      }
     },
     allTasklists: async () => await Tasklist.findAll(),
   },
@@ -92,9 +97,9 @@ export const resolvers = {
       return createdTasklist;
     },
     async updateTasklist(_: any, args: any) {
-      await Tasklist.update(args.edits, {where: {id: args.id}});
+      await Tasklist.update(args.edits, {where: {name: args.name}});
 
-      return await Tasklist.findOne({where: {id: args.id}});
+      return await Tasklist.findOne({where: {name: args.name}});
     },
     async deleteTask(_: any, args: any) {
       const task = await Task.findOne({where: {id: args.id}});

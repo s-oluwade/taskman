@@ -1,5 +1,5 @@
-query GetTasklists($names: [String]!) {
-  tasklists(names: $names) {
+query GetTasklists($names: [String], $userId: String) {
+  tasklists(names: $names, userId: $userId) {
     id
     name
     userId

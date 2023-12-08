@@ -7,8 +7,8 @@ mutation CreateTasklist($tasklist: AddTasklistInput!) {
   }
 }
 
-mutation UpdateTasklist($tasklistId: Int!, $edits: EditTasklistInput!) {
-  updateTasklist(id: $tasklistId, edits: $edits) {
+mutation UpdateTasklist($tasklistName: String!, $edits: EditTasklistInput!) {
+  updateTasklist(name: $tasklistName, edits: $edits) {
     id
     userId
     name

@@ -3,7 +3,7 @@ import {DataTypes, Model, Sequelize} from 'sequelize';
 export default function _Tasklist(sequelize: Sequelize) {
   class Tasklist extends Model {
     declare id: number;
-    declare userId: number;
+    declare userId: string;
     declare name: string;
     declare description: string;
   }
@@ -16,7 +16,7 @@ export default function _Tasklist(sequelize: Sequelize) {
         primaryKey: true,
       },
       userId: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: new DataTypes.STRING(128),
         allowNull: true,
       },
       name: {
