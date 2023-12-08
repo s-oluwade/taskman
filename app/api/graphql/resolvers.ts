@@ -58,6 +58,9 @@ export const resolvers = {
       else if (args.names) {
         return (await Tasklist.findAll()).filter((tasklist) => args.names.includes(tasklist.name));
       }
+      else {
+        return [];
+      }
     },
     allTasklists: async () => await Tasklist.findAll(),
   },
