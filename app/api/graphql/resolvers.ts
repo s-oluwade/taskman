@@ -53,7 +53,7 @@ export const resolvers = {
       await Tasklist.findOne({where: {name: args.name}}),
     tasklists: async (obj: any, args: any, context: any, info: any) => {
       if (args.userId) {
-        return (await Tasklist.findAll()).filter((tasklist) => tasklist.userId.toLowerCase() === args.userId);
+        return (await Tasklist.findAll()).filter((tasklist) => tasklist.userId?.toLowerCase() === args.userId);
       }
       else if (args.names) {
         return (await Tasklist.findAll()).filter((tasklist) => args.names.includes(tasklist.name));
@@ -162,7 +162,6 @@ export const resolvers = {
               })
             );
           });
-
         }
       } else {
         subtasks.push(

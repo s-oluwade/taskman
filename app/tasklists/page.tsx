@@ -25,8 +25,6 @@ const TasksListPage = () => {
   const [localNames, setLocalNames] = useState<string[]>(localTaskListNames);
   const {data, refetch} = useSuspenseQuery(GetTasklistsDocument, {variables: {names: localNames, userId: sessionData?.user?.email}});
 
-  console.log(sessionData?.user?.email);
-
   const currentUserId = sessionData?.user?.email;
   if (currentUserId && localTaskListNames.length > 0) {
     localTaskListNames.forEach(async (tasklistName: string) => {
@@ -41,7 +39,6 @@ const TasksListPage = () => {
       });
     });
     localStorage.removeItem('localTaskListNames');
-    router.refresh();
   }
 
   useEffect(() => {
@@ -49,16 +46,15 @@ const TasksListPage = () => {
       const t: any = data.tasklists;
       setTasklists(t);
     }
-    
   }, [data?.tasklists]);
 
   useEffect(() => {
-    if (sessionData) {
-      refetch();
-      console.log('refetch')
+    if (sessionData && JSON.stringify(session) !== JSON.stringify(sessionData)) {
+      // refetch();
+      console.log('refetch');
       setSession(sessionData);
     }
-  }, [sessionData, setSession, refetch])
+  }, [sessionData])
 
   return (
     <section className='my-6 px-2'>
