@@ -205,7 +205,7 @@ export type Tasklist = {
   __typename?: 'Tasklist';
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
-  name?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
   tasks: Array<Maybe<Task>>;
   userId?: Maybe<Scalars['String']['output']>;
 };
@@ -297,7 +297,7 @@ export type CreateTasklistMutationVariables = Exact<{
 }>;
 
 
-export type CreateTasklistMutation = { __typename?: 'Mutation', createTasklist?: { __typename?: 'Tasklist', id: number, userId?: string | null, name?: string | null, description?: string | null } | null };
+export type CreateTasklistMutation = { __typename?: 'Mutation', createTasklist?: { __typename?: 'Tasklist', id: number, userId?: string | null, name: string, description?: string | null } | null };
 
 export type UpdateTasklistMutationVariables = Exact<{
   tasklistName: Scalars['String']['input'];
@@ -305,14 +305,14 @@ export type UpdateTasklistMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTasklistMutation = { __typename?: 'Mutation', updateTasklist?: { __typename?: 'Tasklist', id: number, userId?: string | null, name?: string | null, description?: string | null } | null };
+export type UpdateTasklistMutation = { __typename?: 'Mutation', updateTasklist?: { __typename?: 'Tasklist', id: number, userId?: string | null, name: string, description?: string | null } | null };
 
 export type DeleteTasklistMutationVariables = Exact<{
   tasklistId: Scalars['Int']['input'];
 }>;
 
 
-export type DeleteTasklistMutation = { __typename?: 'Mutation', deleteTasklist?: Array<{ __typename?: 'Tasklist', id: number, userId?: string | null, name?: string | null, description?: string | null } | null> | null };
+export type DeleteTasklistMutation = { __typename?: 'Mutation', deleteTasklist?: Array<{ __typename?: 'Tasklist', id: number, userId?: string | null, name: string, description?: string | null } | null> | null };
 
 export type GetTasklistsQueryVariables = Exact<{
   names?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
@@ -320,12 +320,12 @@ export type GetTasklistsQueryVariables = Exact<{
 }>;
 
 
-export type GetTasklistsQuery = { __typename?: 'Query', tasklists: Array<{ __typename?: 'Tasklist', id: number, name?: string | null, userId?: string | null, description?: string | null } | null> };
+export type GetTasklistsQuery = { __typename?: 'Query', tasklists: Array<{ __typename?: 'Tasklist', id: number, name: string, userId?: string | null, description?: string | null } | null> };
 
 export type GetAllTasklistsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllTasklistsQuery = { __typename?: 'Query', allTasklists: Array<{ __typename?: 'Tasklist', id: number, name?: string | null, userId?: string | null, description?: string | null } | null> };
+export type GetAllTasklistsQuery = { __typename?: 'Query', allTasklists: Array<{ __typename?: 'Tasklist', id: number, name: string, userId?: string | null, description?: string | null } | null> };
 
 export type GetTasksQueryVariables = Exact<{
   tasklistName: Scalars['String']['input'];

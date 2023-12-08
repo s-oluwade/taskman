@@ -50,8 +50,6 @@ const TasksListPage = () => {
 
   useEffect(() => {
     if (sessionData && JSON.stringify(session) !== JSON.stringify(sessionData)) {
-      // refetch();
-      console.log('refetch');
       setSession(sessionData);
     }
   }, [sessionData])

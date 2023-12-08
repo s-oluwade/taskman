@@ -37,7 +37,7 @@ const EditTaskListDialogButton = ({tasklist}: EditTaskListDialogButtonProps) => 
       return;
     }
 
-    editTasklist({variables: {tasklistId: tasklist.id, edits: {name, description}}});
+    editTasklist({variables: {tasklistName: tasklist.name, edits: {name, description}}});
   }
 
   return (

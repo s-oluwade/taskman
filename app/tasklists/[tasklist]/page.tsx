@@ -12,7 +12,6 @@ interface TasksPageProps {
   params: {tasklist: string};
   searchParams: {date: string};
 }
-
 export const revalidate = 0;
 
 export default async function TasksPage({params, searchParams: {date}}: TasksPageProps) {

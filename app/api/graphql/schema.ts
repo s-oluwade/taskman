@@ -5,7 +5,7 @@ export const typeDefs = `#graphql
   type Tasklist {
     id: Int!
     userId: String
-    name: String # will be randomly generated if undefined
+    name: String! # will be randomly generated if undefined
     description: String
     tasks: [Task]!
   }

@@ -34,7 +34,6 @@ export function AddTasklistDialogButton({onChange}: AddTasklistDialogButtonProps
   const [createTasklist, {data, loading, error}] = useMutation(CreateTasklistDocument, {
     refetchQueries: [GetTasklistsDocument],
   });
-
   const {session} = useContext(Context);
 
   function onSubmit(e: React.FormEvent<HTMLButtonElement>) {
