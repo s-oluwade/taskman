@@ -19,3 +19,6 @@ Subtasks are checked off to complete tasks.
 - Under the hood, it uses AI (ChatGPT) to automatically generate tasklist names, task labels, task animations, and subtasks.
 - Subtask progress are tracked and displayed on the task bar.
 - Subtasks can be viewed by clicking on the task bar.
+
+## Bug
+- No session data returned in production causing sign in to fail
