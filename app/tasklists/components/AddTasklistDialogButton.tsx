@@ -12,13 +12,14 @@ import {
 import {Input} from '@/components/ui/input';
 import {PlusCircledIcon} from '@radix-ui/react-icons';
 import {faker} from '@faker-js/faker';
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import {CreateTasklistDocument, GetTasklistsDocument} from '@/graphql/generated';
 import {GetAllTasklistsDocument} from '@/graphql/generated';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
 // import {useMutation, useQuery} from '@urql/next';
 import {useMutation} from '@apollo/client';
+import { Context } from '@/components/context-provider';
 
 interface AddTasklistDialogButtonProps {
   onChange: (value: string[]) => void;
@@ -34,6 +35,8 @@ export function AddTasklistDialogButton({onChange}: AddTasklistDialogButtonProps
     refetchQueries: [GetTasklistsDocument],
   });
 
+  const {session} = useContext(Context);
+
   function onSubmit(e: React.FormEvent<HTMLButtonElement>) {
     if (name.length === 0) {
       e.preventDefault();
@@ -48,7 +51,7 @@ export function AddTasklistDialogButton({onChange}: AddTasklistDialogButtonProps
     localStorage.setItem('localTaskListNames', JSON.stringify(localTaskListNames));
     onChange(localTaskListNames);
 
-    createTasklist({variables: {tasklist: {name, description, userId: user?.userId}}});
+    createTasklist({variables: {tasklist: {name, description, userId: session?.user?.email}}});
   }
 
   return (
