@@ -25,9 +25,6 @@ const TasksListPage = () => {
   const [localNames, setLocalNames] = useState<string[]>(localTaskListNames);
   const {data} = useSuspenseQuery(GetTasklistsDocument, {variables: {names: localNames, userId: sessionData?.user?.email}});
 
-  console.log('sessionData: ', sessionData);
-  console.log('session: ', session);
-
   const currentUserId = sessionData?.user?.email;
   if (currentUserId && localTaskListNames.length > 0) {
     localTaskListNames.forEach(async (tasklistName: string) => {

@@ -16,8 +16,9 @@
     "plugins": [
       {
         "name": "next"
-      }
+      },
     ],
+    // "types": ["@testing-library/jest-dom"],
     "paths": {
       "@/*": ["./*"]
     },
@@ -26,6 +27,6 @@
       "@types"
     ],
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "__test__/todo.test.jsx", "jest.setup.js", "jest.config.js"],
   "exclude": ["node_modules"]
 }
