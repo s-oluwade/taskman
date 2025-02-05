@@ -8,14 +8,14 @@ import {getAnimationGPT, getGPTSubtasks} from './helpers';
 import {generateLabelGPT} from '@/app/tasklists/[tasklist]/actions';
 
 const sequelize = new Sequelize(process.env.DATABASE_URL!, {
-  host: process.env.MYSQLHOST,
+  // host: process.env.MYSQLHOST,
   dialect: 'mysql',
   dialectModule: mysql2,
-  dialectOptions: {
-    ssl: {
-      rejectUnauthorized: true,
-    },
-  },
+  // dialectOptions: {
+  //   ssl: {
+  //     rejectUnauthorized: true,
+  //   },
+  // },
   define: {
     freezeTableName: true,
     timestamps: false,
