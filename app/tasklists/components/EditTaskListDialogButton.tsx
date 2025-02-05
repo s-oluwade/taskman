@@ -28,7 +28,7 @@ const EditTaskListDialogButton = ({tasklist}: EditTaskListDialogButtonProps) => 
   const [formError, setFormError] = useState(false);
   // just a dummy placeholder
   const [user, setUser] = useState<{userId: number} | null>(null);
-  const [editTasklist, {data, loading, error}] = useMutation(UpdateTasklistDocument, {refetchQueries: [GetAllTasklistsDocument]});
+  // const [editTasklist, {data, loading, error}] = useMutation(UpdateTasklistDocument, {refetchQueries: [GetAllTasklistsDocument]});
 
   function onSubmit(e: React.FormEvent<HTMLButtonElement>) {
     if (name.length === 0) {
@@ -37,7 +37,7 @@ const EditTaskListDialogButton = ({tasklist}: EditTaskListDialogButtonProps) => 
       return;
     }
 
-    editTasklist({variables: {tasklistName: tasklist.name, edits: {name, description}}});
+    // editTasklist({variables: {tasklistName: tasklist.name, edits: {name, description}}});
   }
 
   return (
