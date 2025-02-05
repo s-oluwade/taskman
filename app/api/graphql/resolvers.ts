@@ -7,7 +7,7 @@ import mysql2 from 'mysql2';
 import {getAnimationGPT, getGPTSubtasks} from './helpers';
 import {generateLabelGPT} from '@/app/tasklists/[tasklist]/actions';
 
-const sequelize = new Sequelize(process.env.MYSQLDATABASE!, process.env.MYSQLUSER!, process.env.MYSQLPASSWORD, {
+const sequelize = new Sequelize(process.env.DATABASE_URL!, {
   host: process.env.MYSQLHOST,
   dialect: 'mysql',
   dialectModule: mysql2,
