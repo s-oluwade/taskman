@@ -25,7 +25,7 @@ export default async function TasksPage({params, searchParams: {date}}: TasksPag
 
   let calendarTasks = calendarData?.tasks;
   if (date) {
-    calendarTasks = calendarTasks.filter((task) => task?.dueDate && task.dueDate.includes(date));
+    calendarTasks = calendarTasks.filter((task: { dueDate: string | string[]; }) => task?.dueDate && task.dueDate.includes(date));
   }
 
   return (

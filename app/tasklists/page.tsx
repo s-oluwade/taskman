@@ -4,8 +4,7 @@ import { Context } from '@/components/context-provider';
 import { Button } from '@/components/ui/button';
 import { GetTasklistsDocument, UpdateTasklistDocument } from '@/graphql/generated';
 import { Tasklist } from '@/graphql/types';
-import { useMutation } from '@apollo/client';
-import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr';
+import { useMutation, useQuery } from '@apollo/client';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -23,7 +22,7 @@ const TasksListPage = () => {
   const localTaskListNames =
   typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('localTaskListNames') ?? '[]') : [];
   const [localNames, setLocalNames] = useState<string[]>(localTaskListNames);
-  const {data} = useSuspenseQuery(GetTasklistsDocument, {variables: {names: localNames, userId: sessionData?.user?.email}});
+  const {data} = useQuery(GetTasklistsDocument, {variables: {names: localNames, userId: sessionData?.user?.email}});
 
   const currentUserId = sessionData?.user?.email;
   if (currentUserId && localTaskListNames.length > 0) {
